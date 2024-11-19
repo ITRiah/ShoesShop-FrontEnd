@@ -1,0 +1,19 @@
+.wrapper h2 {
+    margin: 13px 0;
+}
+
+.edit {
+    min-height: 109px;
+    transition: all 0.3s ease;
+    width: 98%;
+}
+.listUser {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+}
+.status {
+    font-size: 1.7rem !important;
+}
+.filter {
+    padding: 0 10px;
+}

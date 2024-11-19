@@ -1,0 +1,101 @@
+@import 'normalize.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500; 600;0,700;1,500&display=swap');
+
+:root {
+    --primary: #fff;
+    --black: #000;
+    --while: #fff;
+    --text-color: #131313;
+    --header-height: 65px;
+
+    //Default layout
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 62.5%;
+    color: var(--text-color);
+    background-color: #ffffff;
+}
+body {
+    font-family: 'roboto', sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    text-rendering: optimizeSpeed;
+    overflow-y: overlay;
+    background-color: #ffffff;
+}
+
+// ScrollBar CSS
+
+html *::-webkit-scrollbar {
+    border-radius: 0;
+    width: 8px;
+}
+
+html *::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+html *::-webkit-scrollbar-track {
+    border-radius: 0;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+button,
+input,
+[tabindex] {
+    outline: none;
+    border: none;
+}
+a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #515154;
+}
+
+// Fonts Embeded
+
+// Custom Tippy Tooltip
+.swiper-button-prev,
+.swiper-button-next {
+    background-color: rgba(221, 220, 220, 0.1);
+    color: #d2d2d7;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+/* mobile */
+@media only screen and (max-width: 767px) {
+    .swiper-button-next,
+    .swiper-button-prev {
+        display: none;
+    }
+    html *::-webkit-scrollbar {
+        width: 0;
+    }
+}
+
+/* tablet */
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+    .swiper-button-next,
+    .swiper-button-prev {
+        display: none;
+    }
+    html *::-webkit-scrollbar {
+        width: 0;
+    }
+}
+
+/* desktop */
+@media only screen and (min-width: 1025px) {
+}

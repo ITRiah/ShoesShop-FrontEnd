@@ -1,0 +1,69 @@
+.wrapper {
+    width: 100%;
+    color: #131313;
+    margin-top: 40px;
+    display: flex;
+}
+
+.sidebar {
+    width: 400px;
+    padding-right: 10px;
+}
+.result {
+    flex: 1;
+    min-height: 100px;
+    width: 200px;
+}
+.search-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+.input {
+    border: 1px solid #ccc;
+}
+
+.search-box button {
+    width: 180px;
+    height: 40px;
+}
+
+.result {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.filter input,
+.filter select,
+.filter option {
+    height: 40px;
+    font-size: 1.7rem;
+    min-width: 100px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    padding: 0 10px;
+    flex: 1;
+}
+
+.filter {
+    width: 100%;
+    border-bottom: 1px solid #292929;
+    display: flex;
+    flex-direction: column;
+}
+
+.filter_item {
+    margin-top: 7px;
+    display: flex;
+
+    p {
+        width: 130px;
+    }
+}
+
+.filter_price {
+    display: flex;
+    flex-direction: column;
+}
