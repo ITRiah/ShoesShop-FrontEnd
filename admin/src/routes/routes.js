@@ -10,8 +10,10 @@ import Products from '~/pages/Products';
 import Events from '~/pages/Events';
 import Articles from '~/pages/Articles';
 import Categories from '~/pages/Categories';
+import Procedures from '~/pages/Procedures';
 import Login from '~/pages/Login';
 import Signup from '~/pages/Signup';
+import Vourchers from '~/pages/Vourchers';
 
 // Public routes
 const publicRoutes = [
@@ -24,6 +26,8 @@ const publicRoutes = [
     { path: config.routes.products, component: Products },
     { path: config.routes.events, component: Events },
     { path: config.routes.articles, component: Articles },
+    { path: config.routes.vourchers, component: Vourchers },
+    { path: config.routes.procedures, component: Procedures },
 ];
 
 const privateRoutes = [];

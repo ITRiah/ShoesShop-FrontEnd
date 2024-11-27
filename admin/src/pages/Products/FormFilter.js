@@ -14,7 +14,7 @@ function FormFilter({ Add, search }) {
     useEffect(() => {
         const fetchAPI = async () => {
             const response = await getall('', '');
-            setCategories(response.data);
+            setCategories(response.result);
         };
         fetchAPI();
     }, []);
@@ -101,7 +101,7 @@ function FormFilter({ Add, search }) {
                 </Col>
                 <Col>
                     <Button variant="success" onClick={Add}>
-                        Add Category
+                        Thêm Sản Phẩm
                     </Button>
                 </Col>
             </Row>

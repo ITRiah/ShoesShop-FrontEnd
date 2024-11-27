@@ -1,6 +1,5 @@
 import classNames from 'classnames/bind';
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React from 'react';
 
 import styles from './Product.module.scss';
 import Ellipsis from '~/components/Ellipsis';
@@ -9,23 +8,13 @@ import { deleted } from '~/ultils/services/productService';
 const cx = classNames.bind(styles);
 
 function Product({ props, onEventDeleted, onUpdate }) {
-    const [imgs, setImgs] = useState([]);
-    const [img, setImg] = useState('');
 
-    useEffect(() => {
-        if (props.avatar) {
-            setImgs(props.avatar.split('*||*'));
-            setImg(props.avatar.split('*||*')[0]);
-        }
-    }, []);
-
-    const formatPrice = new Intl.NumberFormat('vi-VN').format(props.price);
-    const formatAmount = new Intl.NumberFormat('vi-VN').format(props.amount);
+    const formatPrice = new Intl.NumberFormat('vi-VN').format(props.priceRange);
 
     const handleDelete = async () => {
         try {
-            const response = await deleted(props.id);
-            onEventDeleted(props.id); // Notify parent component of deleted event
+            const response = await deleted(props.id);   
+            onEventDeleted(props.id);
         } catch (error) {
             console.log(error);
         } finally {
@@ -41,7 +30,7 @@ function Product({ props, onEventDeleted, onUpdate }) {
 
     const menu = [
         {
-            title: 'Chi tiết/ Sửa',
+            title: 'Sửa',
             onClick: onUpdate,
         },
         {
@@ -51,20 +40,19 @@ function Product({ props, onEventDeleted, onUpdate }) {
     ];
 
     return (
-        <div className={cx('wrapper')} title={props.title}>
+        <div className={cx('wrapper')} title={props.name}>
             <Ellipsis menu={menu} />
             <div className={cx('img')}>
-                <img src={img} alt={props.title} />
+                <img src={props.img} alt={props.name} />
             </div>
             <div className={cx('info')}>
-                <p>{props.title}</p>
+                <p>{props.name}</p>
                 <p>Giá: {formatPrice}đ</p>
                 <div className={cx('info-more')}>
                     <div className={cx('left-info')}>
                         <p>
                             Màu sắc: <span className={cx('color')} style={{ background: `${props.color}` }}></span>
                         </p>
-                        <p>Số lượng còn: {formatAmount}</p>
                     </div>
                     <div className={cx('right-info')}>
                         {props.status === '1' ? (

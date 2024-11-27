@@ -2,17 +2,17 @@ import classNames from 'classnames/bind';
 import { v4 } from 'uuid';
 import { useEffect, useState } from 'react';
 
-import styles from './Categories.module.scss';
+import styles from './Vourchers.module.scss';
 import WhiteBG from '~/Layouts/DefaultLayout/WhiteBG';
-import Category from '~/components/Category';
-import FormCate from './FormCate';
+import Vourcher from '~/components/Vourcher';
+import FormVourcher from './FormVoucher';
 import FormFilter from './FormFilter';
 
-import { getall } from '~/ultils/services/categoriesService';
+import { getall } from '~/ultils/services/voucherService';
 
 const cx = classNames.bind(styles);
 
-function Categories() {
+function Vourchers() {
     const [data, setData] = useState([]);
     const [status, setStatus] = useState('');
     const [name, setName] = useState('');
@@ -46,9 +46,9 @@ function Categories() {
     return (
         <div>
             {showForm || idShow ? (
-                <FormCate
+                <FormVourcher
                     id={idShow}
-                    title="Thêm Danh Mục"
+                    title="Thêm Vourcher"
                     onSuccess={(e) => {
                         if (e === 'success') {
                             setIdShow('');
@@ -61,7 +61,7 @@ function Categories() {
                     }}
                 />
             ) : null}
-            <WhiteBG title="Quản Lý Danh Mục">
+            <WhiteBG title="Quản Lý Voucher">
                 <div className={cx('wrapper')}>
                     <div className={cx('filter')}>
                         <FormFilter
@@ -77,7 +77,7 @@ function Categories() {
                     <div className={cx('list')}>
                         {data.map((item) => {
                             return (
-                                <Category
+                                <Vourcher
                                     onUpdate={() => {
                                         setIdShow(item.id);
                                     }}
@@ -94,4 +94,4 @@ function Categories() {
     );
 }
 
-export default Categories;
+export default Vourchers;

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import styles from './Sidebar.module.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightFromBracket, faShop } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import Menu from '~/components/Menu';
 import routes from '~/config/routes';
 import { deleteCookie } from '~/ultils/cookie';
@@ -25,7 +25,7 @@ function Sidebar() {
                     <Link
                         to={routes.login}
                         onClick={() => {
-                            deleteCookie('login');
+                            deleteCookie('accessToken');
                         }}
                     >
                         <span>Đăng Xuất </span>

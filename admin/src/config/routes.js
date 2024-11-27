@@ -8,6 +8,8 @@ const routes = {
     products: '/products',
     events: '/events',
     articles: '/articles',
+    vourchers: '/vourchers',
+    procedures: '/procedures',
     logout: '/logout',
 };
 

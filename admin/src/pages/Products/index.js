@@ -25,8 +25,8 @@ function Products() {
     useEffect(() => {
         const fetchData = async () => {
             const response = await getall(name, price, category, status);
-            if (response.status === 'success') {
-                setData(response.data);
+            if (response.statusCode === 200) {
+                setData(response.result);
             } else {
                 setData([]);
             }

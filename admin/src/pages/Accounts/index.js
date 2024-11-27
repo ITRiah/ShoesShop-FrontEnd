@@ -28,8 +28,8 @@ function Accounts() {
                 if (response.status === 'fail') {
                     setRows([]);
                 } else {
-                    const newData = response.data.map(
-                        ({ id, username, first_name: firstName, last_name: lastName, phone, email, status }) => {
+                    const newData = response.result.map(
+                        ({ id, username, first_name: firstName, last_name: lastName, email, status }) => {
                             const menu = [
                                 {
                                     title: 'Chi tiết',
@@ -55,7 +55,6 @@ function Accounts() {
                                 username,
                                 firstName,
                                 lastName,
-                                phone,
                                 email,
                                 status:
                                     status === '1' ? (
@@ -80,31 +79,27 @@ function Accounts() {
     const col = [
         {
             field: 'ID',
-            width: 40,
+            width: 50,
         },
         {
             field: 'User Name',
-            width: 120,
+            width: 140,
         },
         {
             field: 'First Name',
-            width: 120,
+            width: 135,
         },
         {
             field: 'Last Name',
-            width: 120,
-        },
-        {
-            field: 'Phone',
-            width: 110,
+            width: 135,
         },
         {
             field: 'Email',
             width: 200,
         },
         {
-            field: 'Status',
-            width: 80,
+            field: 'Trạng thái',
+            width: 100,
         },
         {
             field: 'Action',

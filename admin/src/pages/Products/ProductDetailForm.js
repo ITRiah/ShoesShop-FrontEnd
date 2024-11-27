@@ -7,7 +7,7 @@ import { getall } from '~/ultils/services/categoriesService';
 import { create, getbyid, update } from '~/ultils/services/productService';
 import { getCookie } from '~/ultils/cookie';
 
-function FormProducts({ onClose, title, onSuccess, id }) {
+function ProductDetailForm({ onClose, title, onSuccess, id }) {
     const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState('');
     const [titlex, setTitlex] = useState('');
@@ -250,4 +250,4 @@ function FormProducts({ onClose, title, onSuccess, id }) {
     );
 }
 
-export default FormProducts;
+export default ProductDetailForm;

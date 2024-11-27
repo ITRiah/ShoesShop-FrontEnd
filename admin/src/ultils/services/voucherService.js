@@ -2,7 +2,7 @@ import * as httpRequest from '~/ultils/httpRequest';
 
 export const getall = async (s, n) => {
     try {
-        const res = await httpRequest.get('v1/categories', {
+        const res = await httpRequest.get('v1/vouchers/admin', {
             params: {
                 s: s,
                 n: n,
@@ -16,7 +16,7 @@ export const getall = async (s, n) => {
 
 export const getbyid = async (id) => {
     try {
-        const res = await httpRequest.get('v1/categories/'+id, {});
+        const res = await httpRequest.get('v1/vouchers/'+id, {});
         return res;
     } catch (error) {
         console.log(error);
@@ -39,7 +39,7 @@ export const deleted = async (id) => {
 
 export const create = async (req) => {
     try {
-        const res = await httpRequest.post('v1/categories', req);
+        const res = await httpRequest.post('v1/vouchers', req);
         return res;
     } catch (error) {
         console.log(error);

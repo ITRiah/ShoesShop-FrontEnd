@@ -2,7 +2,7 @@ import * as httpRequest from '~/ultils/httpRequest';
 
 export const getall = async (id, t) => {
     try {
-        const res = await httpRequest.get('orders/getall.php', {
+        const res = await httpRequest.get('v1/orders', {
             params: {
                 id: id,
                 t: t,

@@ -5,5 +5,6 @@ const images = {
     wrong: require('~/assets/images/wrong.png'),
     bgProduct: require('~/assets/images/bgProduct.jpg'),
     bgArticles: require('~/assets/images/bgArticles.jpg'),
+    bgDefault: require('~/assets/images/bgDefault.jpg'),
 };
 export default images;

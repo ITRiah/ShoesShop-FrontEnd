@@ -4,8 +4,8 @@ export const register = async (req) => {
     //console.log(req);
     try {
         const res = await httpRequest.post('v1/users', {
-            firstname: req.firstName,
-            lastname: req.lastName,
+            firstName: req.firstName,
+            lastName: req.lastName,
             password: req.password,
             username: req.username,
             email: req.email,

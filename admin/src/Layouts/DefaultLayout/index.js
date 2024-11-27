@@ -14,7 +14,7 @@ function DefaultLayout({ children }) {
     return (
         <div className={cx('wrapper')}>
             <Sidebar />
-            {true ? (
+            {Login ? (
                 <div className={cx('content')}>{children}</div>
             ) : (
                 <div className={cx('error')}>
