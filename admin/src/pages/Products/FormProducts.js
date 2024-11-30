@@ -11,17 +11,8 @@ function FormProducts({ onClose, title, onSuccess, id }) {
     const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState('');
     const [titlex, setTitlex] = useState('');
-    const [color, setColor] = useState('');
     const [price, setPrice] = useState('');
-    const [quantity, setQuantity] = useState('');
     const [shortDescription, setShortDescription] = useState('');
-    const [ram, setRam] = useState('');
-    const [storage, setStorage] = useState('');
-    const [screenTechnology, setScreenTechnology] = useState('');
-    const [resolution, setResolution] = useState('');
-    const [refreshRate, setRefreshRate] = useState('');
-    const [material, setMaterial] = useState('');
-    const [content, setContent] = useState('');
     const [image, setImage] = useState('');
     const [status, setStatus] = useState('');
 
@@ -42,6 +33,14 @@ function FormProducts({ onClose, title, onSuccess, id }) {
             const fetchData = async () => {
                 try {
                     const response = await getbyid(id);
+                    
+                    if(response.statusCode === 200) {
+                        setCategory(response.data.category.id)
+                        setTitlex(response.data.name);
+                        setStatus(response.data.isDeleted);
+                        setPrice(response.data.priceRange);
+                        setShortDescription(response.data.description);
+                    }
                 } catch (e) {
                     console.log(e);
                 }
@@ -58,44 +57,12 @@ function FormProducts({ onClose, title, onSuccess, id }) {
         setTitlex(event.target.value);
     }
 
-    function handleColorChange(event) {
-        setColor(event.target.value);
-    }
-
     function handlePriceChange(event) {
         setPrice(event.target.value);
     }
 
-    function handleQuantityChange(event) {
-        setQuantity(event.target.value);
-    }
-
     function handleShortDescriptionChange(event) {
         setShortDescription(event.target.value);
-    }
-
-    function handleRamChange(event) {
-        setRam(event.target.value);
-    }
-
-    function handleStorageChange(event) {
-        setStorage(event.target.value);
-    }
-
-    function handleScreenTechnologyChange(event) {
-        setScreenTechnology(event.target.value);
-    }
-
-    function handleResolutionChange(event) {
-        setResolution(event.target.value);
-    }
-
-    function handleRefreshRateChange(event) {
-        setRefreshRate(event.target.value);
-    }
-
-    function handleMaterialChange(event) {
-        setMaterial(event.target.value);
     }
 
     function handleStatusChange(event) {
@@ -143,6 +110,7 @@ function FormProducts({ onClose, title, onSuccess, id }) {
             return;
         }
         if (id) {
+            console.log("id", id)
             const data = {
                 id: id,
                 category_id: category,

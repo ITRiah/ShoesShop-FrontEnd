@@ -25,7 +25,7 @@ export const getbyid = async (id) => {
 
 export const deleted = async (id) => {
     try {
-        const res = await httpRequest.deleted('category/delete.php', {
+        const res = await httpRequest.deleted('v1/categories', {
             params: {
                 id: id,
             },

@@ -9,6 +9,8 @@ const cx = classNames.bind(styles);
 
 function Product({ props, onEventDeleted, onUpdate }) {
 
+    console.log(props)
+
     const formatPrice = new Intl.NumberFormat('vi-VN').format(props.priceRange);
 
     const handleDelete = async () => {
@@ -23,7 +25,11 @@ function Product({ props, onEventDeleted, onUpdate }) {
     };
 
     const handleDeleteConfirmation = () => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
+        if(!props.isDeleted) {
+            if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
+                handleDelete();
+            }
+        }else {
             handleDelete();
         }
     };
@@ -34,7 +40,7 @@ function Product({ props, onEventDeleted, onUpdate }) {
             onClick: onUpdate,
         },
         {
-            title: 'Xóa',
+            title: props.isDeleted ? 'Khôi phục' : 'Xóa',
             onClick: handleDeleteConfirmation,
         },
     ];
@@ -55,10 +61,10 @@ function Product({ props, onEventDeleted, onUpdate }) {
                         </p>
                     </div>
                     <div className={cx('right-info')}>
-                        {props.status === '1' ? (
-                            <p style={{ color: 'green' }}>Đang bán</p>
+                        {props.isDeleted ? (
+                             <p style={{ color: 'red' }}>Đã xóa</p>
                         ) : (
-                            <p style={{ color: 'red' }}>Ẩn</p>
+                            <p style={{ color: 'green' }}>Đang bán</p>
                         )}
                     </div>
                 </div>

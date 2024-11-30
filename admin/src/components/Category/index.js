@@ -24,11 +24,15 @@ function Category({ props, onEventDeleted, onUpdate }) {
     };
 
     const handleDeleteConfirmation = () => {
-        if (
-            window.confirm(
-                'Bạn có chắc chắn muốn xóa danh mục này không?\n Mọi sản phẩm hoặc bài viết trong danh mục sẽ bị xóa.',
-            )
-        ) {
+        if(!props.isDeleted) {
+            if (
+                window.confirm(
+                    'Bạn có chắc chắn muốn xóa danh mục này không?\n Mọi sản phẩm hoặc bài viết trong danh mục sẽ bị xóa.',
+                )
+            ) {
+                handleDelete();
+            }
+        }else {
             handleDelete();
         }
     };
@@ -38,7 +42,7 @@ function Category({ props, onEventDeleted, onUpdate }) {
             onClick: onUpdate,
         },
         {
-            title: 'Xóa',
+            title: props.isDeleted ? 'Khôi phục' : 'Xóa',
             onClick: handleDeleteConfirmation,
         },
     ];
@@ -55,14 +59,13 @@ function Category({ props, onEventDeleted, onUpdate }) {
             )}
             <div className={cx('info')}>
                 <p>{props.name}</p>
-                <p>create by adminid: {props.admin_id}</p>
-                <p>Category type: {props.type === '0' ? 'Product' : 'Articles'}</p>
+                <p>Tạo bởi: {props.admin_id}</p>
                 <p>
                     Trạng Thái:
-                    {props.status === '1' ? (
-                        <span className="success"> Enable</span>
-                    ) : (
+                    {props.isDeleted ? (
                         <span className="error"> Disable</span>
+                    ) : (
+                        <span className="success"> Enable</span>
                     )}
                 </p>
             </div>

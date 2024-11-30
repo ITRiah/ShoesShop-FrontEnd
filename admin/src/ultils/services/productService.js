@@ -35,7 +35,7 @@ export const create = async (req) => {
             name: req.title,
             category: parseInt(req.category_id, 10),
             img: req.avatar,
-            description: "sadsadasdsad",
+            description: req.description,
             priceRange: req.price,
             procedure: 1,
             status: req.status
@@ -50,9 +50,6 @@ export const create = async (req) => {
 export const getbyid = async (id) => {
     try {
         const res = await httpRequest.get('v1/products/'+id, {
-            params: {
-                id: id,
-            },
         });
         return res;
     } catch (error) {
@@ -62,7 +59,15 @@ export const getbyid = async (id) => {
 
 export const update = async (req) => {
     try {
-        const res = await httpRequest.update('v1/products', req);
+        const res = await httpRequest.update('v1/products', {
+            name: req.title,
+            category: parseInt(req.category_id, 10),
+            img: req.avatar,
+            description: req.description,
+            priceRange: req.price,
+            procedure: 1,
+            status: req.status
+        });
         return res.data;
     } catch (e) {
         console.log(e);

@@ -10,7 +10,7 @@ function FormAccount({ onClose, id }) {
     useEffect(() => {
         const fetchData = async () => {
             const response = await getbyid(id);
-            setCustomer(response.data[0]);
+            setCustomer(response.data);
             setOrder(response.orders);
         };
         fetchData();
@@ -19,7 +19,7 @@ function FormAccount({ onClose, id }) {
     return (
         <Modal show={true} onHide={onClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Thông tin khách hàng</Modal.Title>
+                <Modal.Title>Thông tin tài khoản</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {customer && (
@@ -28,17 +28,17 @@ function FormAccount({ onClose, id }) {
                             <Image src={customer.avatar} thumbnail />
                         </Col>
                         <Col md={8}>
+                            <p>ID: {customer.id}</p>
                             <p>Username: {customer.username}</p>
-                            <p>First Name: {customer.first_name}</p>
-                            <p>Last Name: {customer.last_name}</p>
-                            <p>Điện thoại: {customer.phone}</p>
+                            <p>First Name: {customer.firstName}</p>
+                            <p>Last Name: {customer.lastName}</p>
                             <p>Email: {customer.email}</p>
                             <p>
                                 Trạng thái:
-                                {customer.status === '1' ? (
-                                    <span className="success">Enable</span>
+                                {!customer.isDeleted ? (
+                                    <span className="success"> Active</span>
                                 ) : (
-                                    <span className="error">Disable</span>
+                                    <span className="error"> Blocked</span>
                                 )}{' '}
                             </p>
                             {order && (

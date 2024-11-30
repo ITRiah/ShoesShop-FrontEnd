@@ -5,9 +5,9 @@ export const getall = async (n, s) => {
     try {
         const res = await httpRequest.get('v1/users', {
             params: {
-                n: n,
-                s: s,
-            },
+                email: n,
+                role: s,
+            }
         });
         return res;
     } catch (error) {
@@ -36,10 +36,7 @@ export const topprice = async () => {
 export const getbyid = async (id) => {
     //console.log(req);
     try {
-        const res = await httpRequest.get('customer/getbyid.php', {
-            params: {
-                id: id,
-            },
+        const res = await httpRequest.get('v1/users/' +id, {
         });
         return res;
     } catch (error) {
@@ -50,6 +47,19 @@ export const getbyid = async (id) => {
 export const update = async (req) => {
     try {
         const res = await httpRequest.update('customer/update.php', req);
+        return res.data;
+    } catch (e) {
+        console.log(e);
+    }
+};
+
+export const block = async (req) => {
+    try {
+        const res = await httpRequest.update('v1/users/block?id=' + req.id, {
+            params: {
+                id: req.id
+            }
+        });
         return res.data;
     } catch (e) {
         console.log(e);

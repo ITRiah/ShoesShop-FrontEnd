@@ -5,25 +5,30 @@ function FormFilter({ search }) {
     const [name, setName] = useState('');
     const [status, setStatus] = useState('');
 
+    const [role, setRole] = useState('');
+
     const handelNameChange = (e) => {
         setName(e.target.value);
     };
     const handelStatusChange = (e) => {
         setStatus(e.target.value);
     };
+    const handelRoleChange = (e) => {
+        setRole(e.target.value);
+    };
     const handelSubmit = (event) => {
         event.preventDefault();
-        search(name, status);
+        search(name, role);
     };
     return (
         <Form>
             <Row>
                 <Col>
                     <Form.Group controlId="id">
-                        <Form.Label>User Name</Form.Label>
+                        <Form.Label>Tìm kiếm</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Nhập username..."
+                            placeholder="Nhập username hoặc email..."
                             value={name}
                             onChange={handelNameChange}
                         />
@@ -33,11 +38,11 @@ function FormFilter({ search }) {
             <br />
             <Row>
                 <Form.Group controlId="status">
-                    <Form.Label>Trạng Thái</Form.Label>
-                    <Form.Control as="select" value={status} onChange={handelStatusChange}>
+                    <Form.Label>Role</Form.Label>
+                    <Form.Control as="select" value={status} onChange={handelRoleChange}>
                         <option value="">All</option>
-                        <option value="0">Disable</option>
-                        <option value="1">Enable</option>
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
                     </Form.Control>
                 </Form.Group>
             </Row>

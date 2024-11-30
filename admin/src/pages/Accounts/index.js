@@ -7,7 +7,7 @@ import WhiteBG from '~/Layouts/DefaultLayout/WhiteBG';
 import Table2 from '~/components/Table2';
 import Ellipsis from '~/components/Ellipsis';
 import FormFilter from './FormFilter';
-import { getall, update } from '~/ultils/services/userService';
+import { getall, block } from '~/ultils/services/userService';
 import FormAccount from './FormAccount';
 
 const cx = classNames.bind(styles);
@@ -19,17 +19,19 @@ function Accounts() {
     const [updating, setUpdating] = useState('');
     const [name, setName] = useState('');
     const [status, setStatus] = useState('');
+    const [role, setRole] = useState('');
     const [idShow, setIdShow] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getall(name, status);
-                if (response.status === 'fail') {
+                const response = await getall(name, role);
+                
+                if (response.statusCode !== 200) {
                     setRows([]);
                 } else {
                     const newData = response.result.map(
-                        ({ id, username, first_name: firstName, last_name: lastName, email, status }) => {
+                        ({ id, username, first_name: firstName, last_name: lastName, email, isDeleted }) => {
                             const menu = [
                                 {
                                     title: 'Chi tiết',
@@ -38,13 +40,13 @@ function Accounts() {
                                     },
                                 },
                                 {
-                                    title: status === '1' ? 'Disable' : 'Enable',
+                                    title: !isDeleted ? 'Block' : 'Unblock',
                                     onClick: async () => {
-                                        const response = await update({
-                                            id: id,
-                                            status: !parseInt(status),
+                                        const response = await block({
+                                            id: id
                                         });
-                                        if (response.status === 'success') {
+                                        if (response.statusCode === 201 ) {
+                                            window.location.reload();
                                             setUpdating(v4());
                                         }
                                     },
@@ -57,10 +59,10 @@ function Accounts() {
                                 lastName,
                                 email,
                                 status:
-                                    status === '1' ? (
-                                        <span className="success">Enable</span>
+                                    !isDeleted ? (
+                                        <span className="success">Active</span>
                                     ) : (
-                                        <span className="error">Disabled</span>
+                                        <span className="error">Blocked</span>
                                     ),
                                 action: <Ellipsis type2 menu={menu} />,
                             };
@@ -74,7 +76,7 @@ function Accounts() {
             }
         };
         fetchData();
-    }, [updating, name, status]);
+    }, [updating, name, role]);
 
     const col = [
         {
@@ -127,7 +129,7 @@ function Accounts() {
                             <FormFilter
                                 search={(n, s) => {
                                     setName(n);
-                                    setStatus(s);
+                                    setRole(s);
                                 }}
                             />
                         </div>

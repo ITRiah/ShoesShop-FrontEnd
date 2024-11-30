@@ -52,8 +52,8 @@ function Orders() {
     useEffect(() => {
         const fetchData = async () => {
             const response = await getall(id, time);
-            if (response.status === 'success') {
-                const newData = response.data.map(
+            if (response.statusCode === 200) {
+                const newData = response.result.map(
                     ({ id, fullname, address, mobile, price_total, payment_status: status }) => {
                         const menu = [
                             {
