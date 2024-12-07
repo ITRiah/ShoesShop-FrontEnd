@@ -6,7 +6,7 @@ import styles from './ProductItem.module.scss';
 const cx = classNames.bind(styles);
 
 function ProductItem({ props }) {
-    const formatPrice = new Intl.NumberFormat('vi-VN').format(props.price);
+    const formatPrice = new Intl.NumberFormat('vi-VN').format(props.priceRange);
     const navigate = useNavigate();
     return (
         <div
@@ -17,10 +17,10 @@ function ProductItem({ props }) {
         >
             {props.amount <= 0 ? <div className={cx('modal')}>Hết hàng</div> : null}
             <div className={cx('img')}>
-                <img src={props.avatar} alt={props.title} />
+                <img src={props.img} alt={props.name} />
             </div>
             <div className={cx('info')}>
-                <p>{props.title}</p>
+                <p>{props.name}</p>
                 <p>{formatPrice}đ</p>
             </div>
         </div>

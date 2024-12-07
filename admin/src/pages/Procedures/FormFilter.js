@@ -27,14 +27,14 @@ function FormFilter({ Add, search }) {
                     </Form.Group>
                 </Col>
                 <Col>
-                    <Form.Group controlId="status">
+                    {/* <Form.Group controlId="status">
                         <Form.Label>Status</Form.Label>
                         <Form.Control as="select" value={status} onChange={handleStatusChange}>
                             <option value="">All</option>
                             <option value="1">Enable</option>
                             <option value="0">Disable</option>
                         </Form.Control>
-                    </Form.Group>
+                    </Form.Group> */}
                 </Col>
             </Row>
             <Row>

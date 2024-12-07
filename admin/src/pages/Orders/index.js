@@ -17,6 +17,9 @@ function Orders() {
     const [id, setId] = useState('');
     const [time, setTime] = useState('');
     const [idShow, setIdShow] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [fromDate, setFromDate] = useState('');
+    const [toDate, setToDate] = useState('');
 
     const col = [
         {
@@ -25,11 +28,7 @@ function Orders() {
         },
         {
             field: 'Người Nhận',
-            width: 120,
-        },
-        {
-            field: 'Địa Chỉ',
-            width: 120,
+            width: 180,
         },
         {
             field: 'Điện Thoại',
@@ -37,7 +36,7 @@ function Orders() {
         },
         {
             field: 'Tổng Tiền',
-            width: 150,
+            width: 180,
         },
         {
             field: 'Status',
@@ -51,10 +50,10 @@ function Orders() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await getall(id, time);
+            const response = await getall(fullName, fromDate, toDate);
             if (response.statusCode === 200) {
                 const newData = response.result.map(
-                    ({ id, fullname, address, mobile, price_total, payment_status: status }) => {
+                    ({ id, fullName, phone, totalAmount, status}) => {
                         const menu = [
                             {
                                 title: 'Chi tiết',
@@ -64,19 +63,13 @@ function Orders() {
                             },
                         ];
 
-                        const formatPrice = new Intl.NumberFormat('vi-VN').format(price_total);
+                        const formatPrice = new Intl.NumberFormat('vi-VN').format(totalAmount);
                         return {
                             id,
-                            fullname,
-                            address,
-                            mobile,
-                            price_total: formatPrice + 'đ',
-                            status:
-                                status === '1' ? (
-                                    <span className="success">Đã thanh toán</span>
-                                ) : (
-                                    <span className="error">Chưa thanh toán</span>
-                                ),
+                            fullName,
+                            phone,
+                            totalAmount: formatPrice + 'đ',
+                            status: status,
                             action: <Ellipsis type2 menu={menu} />,
                         };
                     },
@@ -87,7 +80,7 @@ function Orders() {
             }
         };
         fetchData();
-    }, [time, id]);
+    }, [fullName, fromDate, toDate]);
 
     return (
         <div>
@@ -106,9 +99,10 @@ function Orders() {
                     </div>
                     <div className={cx('filter')}>
                         <FormFilter
-                            search={(id, t) => {
-                                setId(id);
-                                setTime(t);
+                            search={(fullName, fromDate, toDate) => {
+                                setFromDate(fromDate);
+                                setToDate(toDate);
+                                setFullName(fullName);
                             }}
                         />
                     </div>

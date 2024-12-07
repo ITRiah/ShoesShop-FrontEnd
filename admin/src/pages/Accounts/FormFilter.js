@@ -35,17 +35,17 @@ function FormFilter({ search }) {
                     </Form.Group>
                 </Col>
             </Row>
-            <br />
+            {/* <br />
             <Row>
                 <Form.Group controlId="status">
                     <Form.Label>Role</Form.Label>
-                    <Form.Control as="select" value={status} onChange={handelRoleChange}>
+                    <Form.Control as="select" value={role} onChange={handelRoleChange}>
                         <option value="">All</option>
                         <option value="USER">USER</option>
                         <option value="ADMIN">ADMIN</option>
                     </Form.Control>
                 </Form.Group>
-            </Row>
+            </Row> */}
             <Row>
                 <Col>
                     <Button variant="primary" onClick={handelSubmit}>

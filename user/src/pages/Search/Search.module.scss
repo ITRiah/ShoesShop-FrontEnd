@@ -6,7 +6,7 @@
 }
 
 .sidebar {
-    width: 400px;
+    width: 350px;
     padding-right: 10px;
 }
 .result {
@@ -66,4 +66,9 @@
 .filter_price {
     display: flex;
     flex-direction: column;
+}
+
+.result {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
 }

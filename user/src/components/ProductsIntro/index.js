@@ -16,9 +16,9 @@ function ProductsIntro({ title, id }) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await getall('', '', id, '');
+            const response = await getall('', '', [id], '');
             if (response.statusCode === 200) {
-                setProducts(response.data.slice(0, 4));
+                setProducts(response.result.slice(0, 4));
             } else {
                 setProducts([]);
             }

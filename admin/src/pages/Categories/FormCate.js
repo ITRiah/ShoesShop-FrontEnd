@@ -22,8 +22,8 @@ function FormCate({ onClose, onSuccess, title, id }) {
             if (id) {
                 const response = await getbyid(id);
 
-                if (response.status === 'success') {
-                    const data = response.data[0];
+                if (response.statusCode === 200) {
+                    const data = response.data;
                     setName(data.name);
                     setType(data.type);
                     setImage(data.avatar);
@@ -43,11 +43,36 @@ function FormCate({ onClose, onSuccess, title, id }) {
 
     function handleImageChange(event) {
         const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            setImage(reader.result);
-        };
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Send the file to the API
+        fetch('http://localhost:8080/api/v1/uploads', {
+            method: 'POST',
+            body: formData, // FormData handles the `multipart/form-data` headers automatically
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    // Extract error message from response if possible
+                    return response.json().then((errorData) => {
+                        throw new Error(errorData.message || 'Failed to upload image');
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => {
+                if (!data || !data.data) {
+                    throw new Error('Unexpected response format');
+                }
+                setImage(data.data); // Assuming `data.data` contains the image URL
+                console.log('Upload successful:', data);
+            })
+            .catch((error) => {
+                console.error('Error uploading image:', error.message);
+                alert(`Upload failed: ${error.message}`);
+            });
     }
 
     function handleDescriptionChange(value) {
@@ -67,10 +92,7 @@ function FormCate({ onClose, onSuccess, title, id }) {
             const data = {
                 id: id,
                 name: name,
-                type: type,
-                des: description ? description : '',
-                avatar: image,
-                status: status,
+                image: image
             };
             const updateData = async () => {
                 const fetchAPI = await update(data);
@@ -81,10 +103,7 @@ function FormCate({ onClose, onSuccess, title, id }) {
         } else {
             const data = {
                 name: name,
-                avatar: image,
-                des: description,
-                type: type,
-                status: 1,
+                image: image
             };
             const postData = async () => {
                 try {
@@ -116,30 +135,9 @@ function FormCate({ onClose, onSuccess, title, id }) {
                             onChange={handleNameChange}
                         />
                     </Form.Group>
-                    <Form.Group controlId="formType">
-                        <Form.Label>Loại danh mục</Form.Label>
-                        <Form.Control as="select" value={type} onChange={handleTypeChange}>
-                            <option value="0">Sản phẩm</option>
-                            <option value="1">Bài viết</option>
-                        </Form.Control>
-                    </Form.Group>
-                    {id && (
-                        <Form.Group controlId="formType">
-                            <Form.Label>Trạng Thái</Form.Label>
-                            <Form.Control as="select" value={status} onChange={handelStatusChange}>
-                                <option value="0">Disable</option>
-                                <option value="1">Enable</option>
-                            </Form.Control>
-                        </Form.Group>
-                    )}
-                    <Form.Group className="mb-3">
-                        <Form.Label>Image</Form.Label>
-                        {id && <img className="img-form" src={image} alt={name} />}
+                    <Form.Group controlId="image">
+                        <Form.Label>Hình ảnh</Form.Label>
                         <Form.Control type="file" onChange={handleImageChange} />
-                    </Form.Group>
-                    <Form.Group controlId="formDescription">
-                        <Form.Label>Mô tả</Form.Label>
-                        <ReactQuill value={description} onChange={handleDescriptionChange} placeholder="Nhập mô tả" />
                     </Form.Group>
                 </Form>
             </Modal.Body>

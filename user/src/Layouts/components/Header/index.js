@@ -62,7 +62,9 @@ function Header() {
     useEffect(() => {
         const fetchData = async () => {
             const response = await getall('', '');
-            setCate(response.data);
+            if (response.statusCode === 200) {
+                setCate(response.result);
+            } else setCate([]);
         };
         fetchData();
     }, []);
@@ -99,11 +101,6 @@ function Header() {
                                 </p>
                             );
                         })}
-                        <p>
-                            <Link className={cx('link')} to={routes.articles}>
-                                Bài Viết
-                            </Link>
-                        </p>
                     </div>
                 )}
             </div>

@@ -95,3 +95,25 @@ export const login = async (req) => {
         console.log(error);
     }
 };
+
+export const forgotPassword = async (req) => {
+    try {
+        const res = await httpRequest.post('v1/users/forgot-password?email=' + req.email, {});
+        return res.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const updatePassword = async (req) => {
+    try {
+        const res = await httpRequest.update(
+            'v1/users/password?email=' + req.email + '&password=' + req.password + '&otp=' + req.otp,
+            {},
+        );
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return error.response.data;
+    }
+};

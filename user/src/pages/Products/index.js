@@ -20,28 +20,11 @@ function Products() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await getall('', '', id, '');
-            if (response.status === 'success') {
-                setProducts(response.data);
+            const response = await getall('', '', [id], '');
+            if (response.statusCode === 200) {
+                setProducts(response.result);
             } else {
-                setProducts([
-                    {
-                        id: 1,
-                        title: 'San pham 1',
-                        avater: 'https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-m2m946e5vmii89',
-                        amount: 1000000,
-                        price: 10000000,
-                        status: '1',
-                    },
-                    {
-                        id: 2,
-                        title: 'San pham 2',
-                        avater: 'https://down-vn.img.susercontent.com/file/vn-11134258-7ras8-m2m946e5vmii89',
-                        amount: 1000000,
-                        price: 10000000,
-                        status: '1',
-                    },
-                ]);
+                setProducts([]);
             }
         };
 
@@ -51,7 +34,7 @@ function Products() {
     useEffect(() => {
         const fetchData = async () => {
             const response = await getbyid(id);
-            setCate(response.data[0]);
+            setCate(response.data);
         };
         fetchData();
     }, [id]);
@@ -65,13 +48,15 @@ function Products() {
     const contentStyles = !showMore ? { maxHeight: '500px' } : {};
     return (
         <div className={cx('wrapper')}>
+            {cate.img ? (
+                <div>
+                    <img src={cate.img} alt={cate.name} />
+                </div>
+            ) : null}
             <div className={cx('title')}>{cate.name && cate.name}</div>
             <div className={cx('list')}>
                 {products.map((item) => {
-                    if (item.status === '1') {
-                        return <ProductItem key={v4()} props={item} />;
-                    }
-                    return null;
+                    return <ProductItem key={v4()} props={item} />;
                 })}
             </div>
 

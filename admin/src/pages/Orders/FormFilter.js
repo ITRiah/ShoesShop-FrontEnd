@@ -7,6 +7,9 @@ import { getall } from '~/ultils/services/categoriesService';
 function FormFilter({ search }) {
     const [id, setId] = useState('');
     const [time, setTime] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [fromDate, setFromDate] = useState('');
+    const [toDate, setToDate] = useState('');
 
     const handelIdChange = (e) => {
         setId(e.target.value);
@@ -14,37 +17,59 @@ function FormFilter({ search }) {
     const handelTimeChange = (e) => {
         setTime(e.target.value);
     };
+    const handleChangeFullName = (e) => {
+        setFullName(e.target.value);
+    };
+    const handleChangeFromDate = (e) => {
+        setFromDate(e.target.value);
+    };
+    const handleChangeToDate = (e) => {
+        setToDate(e.target.value);
+    };
     const handelSubmit = (event) => {
         event.preventDefault();
-        search(id, time);
+        search(fullName, fromDate, toDate);
     };
     return (
         <Form>
             <Row>
                 <Col>
                     <Form.Group controlId="id">
-                        <Form.Label>Mã Đơn</Form.Label>
+                        <Form.Label>Họ tên</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Nhập mã đơn hàng..."
-                            value={id}
-                            onChange={handelIdChange}
+                            placeholder="Nhập họ tên..."
+                            value={fullName}
+                            onChange={handleChangeFullName}
                         />
                     </Form.Group>
                 </Col>
             </Row>
-            <br />
             <Row>
-                <Form.Group controlId="status">
-                    <Form.Label>Thời Gian</Form.Label>
-                    <Form.Control as="select" value={time} onChange={handelTimeChange}>
-                        <option value="">All</option>
-                        <option value="1">Hôm nay</option>
-                        <option value="2">Tuần này</option>
-                        <option value="3">Tháng này</option>
-                        <option value="4">Năm này</option>
-                    </Form.Control>
-                </Form.Group>
+                <Col>
+                    <Form.Group controlId="id">
+                        <Form.Label>Từ Ngày</Form.Label>
+                        <Form.Control
+                            type="date"
+                            placeholder=""
+                            value={fromDate}
+                            onChange={handleChangeFromDate}
+                        />
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Form.Group controlId="id">
+                        <Form.Label>Đến Ngày</Form.Label>
+                        <Form.Control
+                            type="date"
+                            placeholder=""
+                            value={toDate}
+                            onChange={handleChangeToDate}
+                        />
+                    </Form.Group>
+                </Col>
             </Row>
             <Row>
                 <Col>

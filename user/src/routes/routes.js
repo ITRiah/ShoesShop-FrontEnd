@@ -14,6 +14,7 @@ import Cart from '~/pages/Cart';
 import Login from '~/pages/Login';
 import Signup from '~/pages/Signup';
 import Search from '~/pages/Search';
+import ForgotPassword from '~/pages/ForgotPassword';
 
 // Public routes
 const publicRoutes = [
@@ -29,6 +30,7 @@ const publicRoutes = [
     { path: config.routes.login, component: Login, layout: HeaderOnly },
     { path: config.routes.signup, component: Signup, layout: HeaderOnly },
     { path: config.routes.search, component: Search, layout: HeaderOnly },
+    { path: config.routes.forgotPassword, component: ForgotPassword, layout: HeaderOnly },
 ];
 
 const privateRoutes = [];

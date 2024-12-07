@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import styles from './Search.module.scss';
 import { useEffect, useState } from 'react';
-import { search } from '~/ultils/services/productService';
+import { getall } from '~/ultils/services/productService';
 import Button from '~/components/Button';
 import ProductItem from '~/components/ProductItem';
 import { v4 } from 'uuid';
@@ -25,9 +25,9 @@ function Search() {
     useEffect(() => {
         setsearchValue(s);
         const fetchData = async () => {
-            const resposne = await search(s, limit[0], limit[1], sort);
-            if (resposne.status === 'success') {
-                setData(resposne.data);
+            const resposne = await getall(searchValue, 1, 1, 1);
+            if (resposne.statusCode === 200) {
+                setData(resposne.result);
             } else {
                 setData([]);
             }
@@ -59,7 +59,7 @@ function Search() {
                 </div>
                 <div className={cx('filter')}>
                     <div className={cx('filter_item')}>
-                        <p>Sắp xếp theo:</p>
+                        {/* <p>Sắp xếp theo:</p>
                         <select
                             value={sort}
                             onChange={(e) => {
@@ -68,7 +68,7 @@ function Search() {
                         >
                             <option value="1">Giá tăng dần</option>
                             <option value="2">Giá giảm dần</option>
-                        </select>
+                        </select> */}
                     </div>
                     <div className={cx('filter_price')}>
                         <div className={cx('filter_item')}>

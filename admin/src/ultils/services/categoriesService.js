@@ -2,13 +2,10 @@ import * as httpRequest from '~/ultils/httpRequest';
 
 export const getall = async (s, n) => {
     try {
-        const res = await httpRequest.get('v1/categories', {
-            params: {
-                s: s,
-                n: n,
-            },
+        const res = await httpRequest.post('v1/categories/search', {
+            name: n
         });
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
     }
@@ -39,7 +36,10 @@ export const deleted = async (id) => {
 
 export const create = async (req) => {
     try {
-        const res = await httpRequest.post('v1/categories', req);
+        const res = await httpRequest.post('v1/categories', {
+            name: req.name,
+            img: req.image
+        });
         return res;
     } catch (error) {
         console.log(error);
@@ -48,7 +48,11 @@ export const create = async (req) => {
 
 export const update = async (req) => {
     try {
-        const res = await httpRequest.update('category/update.php', req);
+        const res = await httpRequest.update('v1/categories', {
+            id: req.id,
+            name: req.name,
+            img: req.image
+        });
         return res;
     } catch (e) {
         console.log(e);

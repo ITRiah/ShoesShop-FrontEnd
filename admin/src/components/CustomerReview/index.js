@@ -1,41 +1,82 @@
-import { useState } from 'react';
-import ReactApexChart from 'react-apexcharts';
+import { useState, useEffect } from 'react';
+import Chart from 'react-apexcharts';
+import { statistic } from '~/ultils/services/OrdersService';
 
-const CustomerReview = () => {
+const CustomerReview = ({ year }) => {
     const [options, setOptions] = useState({
         chart: {
             id: 'line-chart',
         },
         xaxis: {
-            categories: ['1⭐', '2⭐', '3⭐', '4⭐', '5⭐'],
+            categories: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
         },
-        yaxis: {
-            title: {
-                text: 'Customer Reviews',
-            },
+        title: {
+            text: 'Doanh thu theo tháng',
+            align: 'left',
         },
     });
 
     const [series, setSeries] = useState([
         {
-            name: 'All',
-            data: [100, 200, 300, 500, 600],
-        },
-        {
-            name: 'January',
-            data: [10, 20, 30, 40, 900],
-        },
-        {
-            name: 'February',
-            data: [20, 30, 40, 50, 60],
-        },
-        {
-            name: 'March',
-            data: [30, 40, 50, 60, 70],
+            name: 'Doanh thu',
+            data: [30000, 40000, 35000, 50000, 49000, 60000],
         },
     ]);
 
-    return <ReactApexChart options={options} series={series} type="area" height={250} width={360} />;
+    useEffect(() => {
+        console.log('Year has changed:', year); // Log the year value to check if it changes
+
+        const fetchData = async () => {
+            try {
+                const response = await statistic({
+                    month: 12,
+                    year: year ?? 2024,
+                });
+                console.log('API response:', response); // Log response data
+
+                if (response.statusCode === 200) {
+                    let seriesRs = [];
+                    let CateRs = [];
+                    response.data.forEach((e) => {
+                        seriesRs.push(e.totalRevenue);
+                        CateRs.push('Tháng ' + e.month);
+                    });
+
+                    setSeries([
+                        {
+                            name: 'Doanh thu',
+                            data: seriesRs,
+                        },
+                    ]);
+
+                    setOptions({
+                        chart: {
+                            id: 'line-chart',
+                        },
+                        xaxis: {
+                            categories: CateRs,
+                        },
+                        title: {
+                            text: 'Doanh thu theo tháng',
+                            align: 'left',
+                        },
+                    });
+                } else {
+                    console.error('Error: Response status not 200');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, [year]); // Effect triggers when 'year' changes
+
+    return (
+        <div>
+            <Chart options={options} series={series} type="line" height={250} />
+        </div>
+    );
 };
 
 export default CustomerReview;

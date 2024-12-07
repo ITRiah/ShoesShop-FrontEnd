@@ -7,9 +7,6 @@ const cx = classNames.bind(styles);
 function AuthForm({ title, img, children }) {
     return (
         <div className={cx('wrapper')}>
-            <div className={cx('left')}>
-                <img src={img} alt={title} />
-            </div>
             <div className={cx('right')}>
                 <h3>{title}</h3>
                 <div className={cx('children')}>{children}</div>

@@ -192,3 +192,13 @@ h6 {
     font-size: 1.7rem;
     min-width: 140px;
 }
+
+.model_pd_detail {
+    display: flex;
+    justify-content: center;
+}
+
+.model_pd_detail .modal-dialog {
+    width: 700px!important;
+    max-width: 700px!important;
+}

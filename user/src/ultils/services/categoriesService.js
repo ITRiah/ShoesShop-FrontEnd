@@ -2,13 +2,10 @@ import * as httpRequest from '~/ultils/httpRequest';
 
 export const getall = async (s, n) => {
     try {
-        const res = await httpRequest.get('v1/categories', {
-            params: {
-                s: s,
-                n: n,
-            },
+        const res = await httpRequest.post('v1/categories/search', {
+            role: 'USER',
         });
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
     }
@@ -16,9 +13,10 @@ export const getall = async (s, n) => {
 
 export const getbyid = async (id) => {
     try {
-        const res = await httpRequest.get('category/getbyid.php', {
+        const res = await httpRequest.get('v1/categories/' + id, {
             params: {
                 id: id,
+                role: 'USER',
             },
         });
         return res;

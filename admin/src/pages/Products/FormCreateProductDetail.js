@@ -1,23 +1,29 @@
+import classNames from 'classnames/bind';
 import { useState, useEffect } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import 'react-quill/dist/quill.snow.css';
 import { v4 } from 'uuid';
-
+import styles from './Products.module.scss';
 import { getall } from '~/ultils/services/categoriesService';
 import { getall as getallProce } from '~/ultils/services/proceduresService';
-import { create, getbyid, update } from '~/ultils/services/productService';
+import { create, createdetail,updatedetail, getbyid, update, getdetailbyid } from '~/ultils/services/productService';
 import { getCookie } from '~/ultils/cookie';
-
-function FormProducts({ onClose, title, onSuccess, id }) {
+const cx = classNames.bind(styles);
+function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' }) {
+    console.log("xsssssssssss", idDetail)
     const [categories, setCategories] = useState([]);
     const [procedures, setProceDures] = useState([]);
     const [category, setCategory] = useState('');
     const [procedure, setProceDure] = useState('');
     const [titlex, setTitlex] = useState('');
-    const [price, setPrice] = useState('');
     const [shortDescription, setShortDescription] = useState('');
     const [image, setImage] = useState('');
     const [status, setStatus] = useState('');
+
+    const [color, setColor] = useState('');
+    const [size, setSize] = useState('');
+    const [quantity, setQuantity] = useState('');
+    const [price, setPrice] = useState('');
 
     useEffect(() => {
         const fetchCate = async () => {
@@ -47,12 +53,26 @@ function FormProducts({ onClose, title, onSuccess, id }) {
                     const response = await getbyid(id);
                     
                     if(response.statusCode === 200) {
-                        setCategory(response.data.category.id)
-                        setProceDure(response.data.procedure.id)
                         setTitlex(response.data.name);
-                        setStatus(response.data.isDeleted);
-                        setPrice(response.data.priceRange);
-                        setShortDescription(response.data.description);
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+            };
+            fetchData();
+        }
+
+        if (idDetail) {
+            const fetchData = async () => {
+                try {
+                    const response = await getdetailbyid(idDetail);
+                    
+                    if(response.statusCode === 200) {
+                        setColor(response.data.color);
+                        setSize(response.data.size);
+                        setQuantity(response.data.quantity);
+                        setPrice(response.data.price);
+                        setImage(response.data.image);
                     }
                 } catch (e) {
                     console.log(e);
@@ -61,6 +81,19 @@ function FormProducts({ onClose, title, onSuccess, id }) {
             fetchData();
         }
     }, []);
+
+    function handleColorChange(event) {
+        setColor(event.target.value);
+    }
+
+    function handleSizeChange(event) {
+        setSize(event.target.value);
+    }
+
+
+    function handleQuantityChange(event) {
+        setQuantity(event.target.value);
+    }
 
     function handleCategoryChange(event) {
         setCategory(event.target.value);
@@ -122,56 +155,70 @@ function FormProducts({ onClose, title, onSuccess, id }) {
 
     function handleSubmit(event) {
         event.preventDefault();
-        console.log(procedure)
-        if (!category || !titlex || !price || !procedure) {  // !image
-            alert('Vui lòng nhập đủ thông tin sản phẩm, tên sản phẩm, hình ảnh, giá bán');
+        if (!color || !size || !quantity || !price) {  // !image
+            alert('Vui lòng nhập đủ thông tin màu sắc, size, số lượng, giá bán');
             return;
         }
-        if (id) {
+        if (id && !idDetail) {
             const data = {
-                id: id,
-                category_id: category,
-                procedure_id: procedure,
-                title: titlex,
-                avatar: image,
+                productId: id,
+                size: size,
+                color: color,
                 price: price,
-                summary: shortDescription,
-                status: status,
+                quantity: quantity,
+                image: image
             };
             const fetchAPI = async () => {
                 try {
-                    const response = await update(data);
+                    const response = await createdetail(data);
                     console.log(response);
                     onSuccess(response.status);
                 } catch (e) {
                     console.log(e);
                 }
             };
+            window.location.reload();
             fetchAPI();
-        } else {
-            const data = {
-                category_id: category,
-                procedure_id: category,
-                title: titlex,
-                avatar: image,
-                price: price,
-                summary: shortDescription,
-                status: 1,
-            };
+        }
 
+        if (id && idDetail) {
+            const data = {
+                id: id,
+                productId: id,
+                size: size,
+                color: color,
+                price: price,
+                quantity: quantity,
+                image: image
+            };
             const fetchAPI = async () => {
                 try {
-                    const response = await create(data);
-                    onSuccess(response.status);
+                    const response = await updatedetail(data);
+                    console.log(response);
+                    // onSuccess(response.status);
                 } catch (e) {
                     console.log(e);
                 }
             };
             fetchAPI();
+            // window.location.reload();
         }
-
+        
         onClose();
     }
+
+    const shoeSizes = [
+        { size: 36, description: "Small size, suitable for kids or women with small feet" },
+        { size: 37, description: "Small size" },
+        { size: 38, description: "Small to medium size" },
+        { size: 39, description: "Medium size, most common size for women" },
+        { size: 40, description: "Medium size, common size for women" },
+        { size: 41, description: "Medium size, common size for men" },
+        { size: 42, description: "Large size, suitable for men with average feet" },
+        { size: 43, description: "Large size, suitable for men with large feet" },
+        { size: 44, description: "Large size, often for men" },
+        { size: 45, description: "Very large size, suitable for men with very large feet" }
+    ];
 
     return (
         <Modal show={true} onHide={onClose}>
@@ -180,48 +227,32 @@ function FormProducts({ onClose, title, onSuccess, id }) {
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={handleSubmit} className="form">
-            
-
                     <Form.Group controlId="title">
                         <Form.Label>Tên Sản Phẩm</Form.Label>
-                        <Form.Control type="text" value={titlex} onChange={handleTitleChange} />
+                        <p>{titlex}</p>
                     </Form.Group>
                     <Form.Group controlId="category">
-                        <Form.Label>Danh mục</Form.Label>
-                        <Form.Control as="select" value={category} onChange={handleCategoryChange}>
-                            <option value="">Chọn Danh Mục</option>
-                            {categories.map((cate) =>
-                                <option key={v4()} value={cate.id}>
-                                    {cate.name}
-                                </option>
-                            )}
-                        </Form.Control>
+                        <Form.Label>Màu sắc</Form.Label>
+                        <Form.Control type="color" value={color} onChange={handleColorChange} />
                     </Form.Group>
                     <Form.Group controlId="procedure">
-                        <Form.Label>Nhà cung cấp</Form.Label>
-                        <Form.Control as="select" value={procedure} onChange={handleProcedureChange}>
-                            <option value="">Chọn Nhà Cung Cấp</option>
-                            {procedures.map((proce) =>
-                                <option key={v4()} value={proce.id}>
-                                    {proce.name}
+                        <Form.Label>Size</Form.Label>
+                        <Form.Control as="select" value={size} onChange={handleSizeChange}>
+                            <option value="">Chọn Size</option>
+                            {shoeSizes.map((size) =>
+                                <option key={v4()} value={size.size}>
+                                    {size.size}
                                 </option>
                             )}
                         </Form.Control>
                     </Form.Group>
-
                     <Form.Group controlId="price">
-                        <Form.Label>Mức giá</Form.Label>
-                        <Form.Control type="number" value={price} onChange={handlePriceChange} />
+                        <Form.Label>Số lượng</Form.Label>
+                        <Form.Control type="number" value={quantity} onChange={handleQuantityChange} />
                     </Form.Group>
-
-                    <Form.Group controlId="shortDescription">
-                        <Form.Label>Mô tả</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            value={shortDescription}
-                            onChange={handleShortDescriptionChange}
-                        />
+                    <Form.Group controlId="price">
+                        <Form.Label>Giá</Form.Label>
+                        <Form.Control type="number" value={price} onChange={handlePriceChange} />
                     </Form.Group>
                     <Form.Group controlId="image">
                         <Form.Label>Hình ảnh</Form.Label>
@@ -241,4 +272,4 @@ function FormProducts({ onClose, title, onSuccess, id }) {
     );
 }
 
-export default FormProducts;
+export default FormCreateProductDetail;

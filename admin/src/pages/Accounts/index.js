@@ -26,12 +26,14 @@ function Accounts() {
         const fetchData = async () => {
             try {
                 const response = await getall(name, role);
+
+                console.log(response)
                 
                 if (response.statusCode !== 200) {
                     setRows([]);
                 } else {
                     const newData = response.result.map(
-                        ({ id, username, first_name: firstName, last_name: lastName, email, isDeleted }) => {
+                        ({ id, username, firstName, lastName, email, isDeleted }) => {
                             const menu = [
                                 {
                                     title: 'Chi tiết',

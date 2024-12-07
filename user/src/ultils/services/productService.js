@@ -1,16 +1,13 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
-export const getall = async (n, p, c, s) => {
+export const getall = async (n, p, cates, s) => {
     try {
-        const res = await httpRequest.get('product/getall.php', {
-            params: {
-                n: n,
-                p: p,
-                c: c,
-                s: s,
-            },
+        const res = await httpRequest.post('v1/products/search', {
+            role: 'USER',
+            name: n,
+            categoryIds: cates,
         });
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
     }
@@ -57,7 +54,7 @@ export const create = async (req) => {
 
 export const getbyid = async (id) => {
     try {
-        const res = await httpRequest.get('product/getbyid.php', {
+        const res = await httpRequest.get('v1/products/' + id, {
             params: {
                 id: id,
             },

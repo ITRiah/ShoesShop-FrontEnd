@@ -1,16 +1,14 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
-export const getall = async (n, p, c, s) => {
+export const getall = async (name, fromPrice, toPrice, procedure) => {
     try {
-        const res = await httpRequest.get('v1/products', {
-            params: {
-                n: n,
-                p: p,
-                c: c,
-                s: s,
-            },
+        const res = await httpRequest.post('v1/products/search', {
+            name: name,
+            priceBigger: toPrice,
+            priceLower: fromPrice,
+            // procedureIds: [procedure]
         });
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
     }
@@ -29,6 +27,19 @@ export const deleted = async (id) => {
     }
 };
 
+export const deletedDetail = async (id) => {
+    try {
+        const res = await httpRequest.deleted('v1/product-details', {
+            params: {
+                id: id,
+            },
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const create = async (req) => {
     try {
         const res = await httpRequest.post('v1/products', {
@@ -37,11 +48,39 @@ export const create = async (req) => {
             img: req.avatar,
             description: req.description,
             priceRange: req.price,
-            procedure: 1,
+            procedure: parseInt(req.procedure_id, 10),
             status: req.status
         });
         
         return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const createdetail = async (req) => {
+    try {
+        const res = await httpRequest.post('v1/product-details', {
+            productId: req.productId,
+            color: req.color,
+            size: req.size,
+            quantity: req.quantity,
+            img: req.image,
+            price: req.price
+        });
+        
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getalldetails = async (id) => {
+    try {
+        const res = await httpRequest.get('v1/product-details/' + id, {
+           
+        });
+        return res.data;
     } catch (error) {
         console.log(error);
     }
@@ -57,15 +96,26 @@ export const getbyid = async (id) => {
     }
 };
 
+export const getdetailbyid = async (id) => {
+    try {
+        const res = await httpRequest.get('v1/product-details/'+id, {
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const update = async (req) => {
     try {
         const res = await httpRequest.update('v1/products', {
+            id: req.id,
             name: req.title,
             category: parseInt(req.category_id, 10),
             img: req.avatar,
             description: req.description,
             priceRange: req.price,
-            procedure: 1,
+            procedure: parseInt(req.procedure_id, 10),
             status: req.status
         });
         return res.data;
@@ -73,3 +123,21 @@ export const update = async (req) => {
         console.log(e);
     }
 };
+
+export const updatedetail = async (req) => {
+    try {
+        const res = await httpRequest.update('v1/product-details', {
+            id: req.id,
+            productId: req.productId,
+            color: req.color,
+            size: req.size,
+            quantity: req.quantity,
+            img: req.image,
+            price: req.price
+        });
+        return res.data;
+    } catch (e) {
+        console.log(e);
+    }
+};
+

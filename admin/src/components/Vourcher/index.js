@@ -43,21 +43,22 @@ function Vourcher({ props, onEventDeleted, onUpdate }) {
         },
     ];
 
+    const formatDate = (date) => {
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
     return (
         <div style={{ background: `url(${bg})` }} className={cx('wrapper')}>
             <Ellipsis menu={menu} />
-            {props.avatar ? (
-                <div className={cx('img')}>
-                    <img src={props.avatar} alt={props.name} />
-                </div>
-            ) : (
-                ''
-            )}
             <div className={cx('info')}>
                 <p>Mã: {props.code}</p>
-                <p>Tạo bởi: {props.admin_id}</p>
                 <p>Giá trị: {props.value}</p>
                 <p>Số lượng: {props.quantity}</p>
+                <p>Hạn: {formatDate(props.expiredTime)}</p>
             </div>
         </div>
     );

@@ -11,7 +11,7 @@ import { getCookie } from '~/ultils/cookie';
 const cx = classNames.bind(styles);
 
 function FormVoucher({ onClose, onSuccess, title, id }) {
-
+    const [image, setImage] = useState('');
     const [code, setCode] = useState('');
     const [value, setValue] = useState('');
     const [quantity, setQuantity] = useState('');
@@ -24,8 +24,16 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
             if (id) {
                 const response = await getbyid(id);
 
-                if (response.status === 'success') {
-                    const data = response.data[0];
+                if (response.statusCode === 200) {
+                    const data = response.data;
+                    setCode(data.code);
+                    setValue(data.value);
+                    setQuantity(data.quantity);
+                    setMaxMoney(data.maxMoney);
+                    const date = new Date(data.expiredTime);
+                    const formattedDate = date.toISOString().split('T')[0];
+                    setExpiredTime(formattedDate);
+                    setDescription(data.description);
                 } else {
                     // handle error
                 }
@@ -63,12 +71,14 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
         event.preventDefault();
         if (id) {
             const data = {
+                id: id,
                 code: code,
                 value: value,
                 quantity: quantity,
                 maxMoney: maxMoney,
                 expiredTime: expiredTime,
-                description: description
+                description: description,
+                img: image
             };
             const updateData = async () => {
                 const fetchAPI = await update(data);
@@ -83,7 +93,8 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
                 quantity: quantity,
                 maxMoney: maxMoney,
                 expiredTime: expiredTime,
-                description: description
+                description: description,
+                img: image
             };
             const postData = async () => {
                 try {
@@ -97,6 +108,40 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
             window.location.reload();
         }
         onClose();
+    }
+
+    function handleImageChange(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Send the file to the API
+        fetch('http://localhost:8080/api/v1/uploads', {
+            method: 'POST',
+            body: formData, // FormData handles the `multipart/form-data` headers automatically
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    // Extract error message from response if possible
+                    return response.json().then((errorData) => {
+                        throw new Error(errorData.message || 'Failed to upload image');
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => {
+                if (!data || !data.data) {
+                    throw new Error('Unexpected response format');
+                }
+                setImage(data.data); // Assuming `data.data` contains the image URL
+                console.log('Upload successful:', data);
+            })
+            .catch((error) => {
+                console.error('Error uploading image:', error.message);
+                alert(`Upload failed: ${error.message}`);
+            });
     }
 
     return (
@@ -146,10 +191,14 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
                         <Form.Label>Hết hạn</Form.Label>
                         <Form.Control
                             type="date"
-                            placeholder="Nhập ngày hết hạn..."
+                            placeholder="Nhập thời gian hết hạn..."
                             value={expiredTime}
                             onChange={handleExpiredTimeChange}
                         />
+                    </Form.Group>
+                    <Form.Group controlId="image">
+                        <Form.Label>Hình ảnh</Form.Label>
+                        <Form.Control type="file" onChange={handleImageChange} />
                     </Form.Group>
                     
                     <Form.Group controlId="formDescription">

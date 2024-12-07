@@ -5,13 +5,16 @@ import Button from '~/components/Button';
 import CartItem from './CartItem';
 import routes from '~/config/routes';
 
-import { getCart, calculateTotal } from '~/ultils/session';
+// import { getCart, calculateTotal } from '~/ultils/session';
 import styles from './Cart.module.scss';
 import { v4 } from 'uuid';
 import { getCookie } from '~/ultils/cookie';
 import { create } from '~/ultils/services/OrdersService';
 import { getbyid } from '~/ultils/services/userService';
 import { isLogin } from '~/ultils/cookie/checkLogin';
+import { getCart, updateCart, deleteCart } from '~/ultils/services/cartService';
+import { getall } from '~/ultils/services/voucherService';
+import { Form } from 'react-bootstrap';
 
 const cx = classNames.bind(styles);
 
@@ -19,6 +22,9 @@ function Cart() {
     const [total, setTotal] = useState(0);
     const [items, setItems] = useState([]);
     const [isValid, setIsValid] = useState(false);
+    const [selectedValueVoucher, setSelectedValueVoucher] = useState('');
+    const [selectedVoucherObject, setSelectedVoucherObject] = useState(null);
+    const [voucherList, setVoucherList] = useState([]);
     const [billingInfo, setBillingInfo] = useState({
         fullName: '',
         address: '',
@@ -29,20 +35,46 @@ function Cart() {
 
     useEffect(() => {
         if (isLogin()) {
-            const fetchData = async () => {
-                const response = await getbyid(getCookie('login').id);
-                const user = response.data[0];
+            // const fetchData = async () => {
+            //     const response = await getbyid(getCookie('login').id);
+            //     const user = response.data[0];
+            //     setBillingInfo({
+            //         ...billingInfo,
+            //         fullName: `${user.first_name} ${user.last_name}`,
+            //         address: `${user.address}`,
+            //         email: `${user.email}`,
+            //         phone: `${user.phone}`,
+            //     });
+            // };
+            // fetchData();
+        }
+    }, []);
 
-                setBillingInfo({
-                    ...billingInfo,
-                    fullName: `${user.first_name} ${user.last_name}`,
-                    address: `${user.address}`,
-                    email: `${user.email}`,
-                    phone: `${user.phone}`,
-                });
+    useEffect(() => {
+        if (isLogin()) {
+            const fetchData = async () => {
+                const response = await getCart(1);
+                console.log(response.data.cartDetails);
+                if (response.statusCode === 200) {
+                    setItems(response.data.cartDetails);
+                }
             };
+
             fetchData();
         }
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await getall();
+            if (response.statusCode === 200) {
+                setVoucherList(response.result);
+            } else {
+                setVoucherList([]);
+            }
+        };
+
+        fetchData();
     }, []);
 
     useEffect(() => {
@@ -56,16 +88,16 @@ function Cart() {
     const [reloadComponent, setReloadComponent] = useState('');
 
     useEffect(() => {
-        setItems(JSON.parse(localStorage.getItem('cartItems')) || getCart());
-        setTotal(calculateTotal(getCart()));
+        // setItems(JSON.parse(localStorage.getItem('cartItems')) || getCart());
+        // setTotal(calculateTotal(getCart()));
     }, [reloadComponent]);
 
     useEffect(() => {
-        const call = () => {
-            localStorage.setItem('cartItems', JSON.stringify(items));
-            setTotal(calculateTotal(items));
-        };
-        call();
+        // const call = () => {
+        //     localStorage.setItem('cartItems', JSON.stringify(items));
+        //     setTotal(calculateTotal(items));
+        // };
+        // call();
     }, [items]);
 
     const submit = async () => {
@@ -82,19 +114,18 @@ function Cart() {
                 price_total: total,
                 products: items,
             };
-
             if (isLogin()) {
-                const fetchData = async () => {
-                    const response = await create(payload);
-                    if (response.data.status === 'success') {
-                        localStorage.setItem('cartItems', JSON.stringify([]));
-                        setItems([]);
-                        alert('Đặt hàng thành công');
-                    } else {
-                        alert(response.data.message);
-                    }
-                };
-                fetchData();
+                // const fetchData = async () => {
+                //     const response = await create(payload);
+                //     if (response.data.status === 'success') {
+                //         localStorage.setItem('cartItems', JSON.stringify([]));
+                //         setItems([]);
+                //         alert('Đặt hàng thành công');
+                //     } else {
+                //         alert(response.data.message);
+                //     }
+                // };
+                // fetchData();
             } else {
                 alert('Đăng nhập để đặt hàng');
             }
@@ -111,7 +142,7 @@ function Cart() {
                                 <thead>
                                     <tr>
                                         <th>Hình ảnh</th>
-                                        <th>Tên sản phẩm</th>
+                                        <th>Chi tiết</th>
                                         <th>Giá bán</th>
                                         <th>Số lượng</th>
                                         <th></th>
@@ -120,7 +151,7 @@ function Cart() {
                                 <tbody>
                                     {items.map((item) => (
                                         <CartItem
-                                            key={item.product.id}
+                                            key={item.id}
                                             item={item}
                                             onUpdateTotal={() => {
                                                 setReloadComponent(v4());
@@ -173,6 +204,78 @@ function Cart() {
                     </div>
                     <div className={cx('right')}>
                         <div className={cx('sidebar-cart')}>
+                            <div className={cx('voucher')}>
+                                <div>Voucher</div>
+                                <div>
+                                    <select
+                                        onChange={(e) => {
+                                            setSelectedValueVoucher(e.target.value);
+                                            const selectedCode = e.target.value;
+                                            const selectedVoucherObj = voucherList.find(
+                                                (voucher) => voucher.code === selectedCode,
+                                            );
+                                            if (selectedVoucherObj) {
+                                                setSelectedVoucherObject(selectedVoucherObj);
+                                            } else {
+                                                setSelectedVoucherObject(null);
+                                            }
+                                        }}
+                                        value={selectedValueVoucher}
+                                        style={{
+                                            width: '100%',
+                                            padding: '10px',
+                                            borderRadius: '8px',
+                                            border: '1px solid #ccc',
+                                            backgroundColor: '#f9f9f9',
+                                            color: '#333',
+                                            fontSize: '14px',
+                                            outline: 'none',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.3s ease',
+                                        }}
+                                    >
+                                        <option value="">Chọn voucher</option>
+                                        {voucherList.map((value) => {
+                                            return <option key={v4()} value={value.code}>{`${value.code}`}</option>;
+                                        })}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className={cx('voucherDescription')}>
+                                {selectedVoucherObject ? (
+                                    <div
+                                        style={{
+                                            width: '100%',
+                                            padding: '10px',
+                                            border: '1px solid #ccc',
+                                            borderRadius: '8px',
+                                            backgroundColor: '#f9f9f9',
+                                            color: '#333',
+                                            fontSize: '14px',
+                                            lineHeight: '1.6',
+                                            marginTop: '10px',
+                                            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                            transition: 'all 0.3s ease',
+                                        }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: selectedVoucherObject.description,
+                                        }}
+                                    />
+                                ) : null}
+                            </div>
+                            <br></br>
+                            <div className={cx('PaymentMethod')}>
+                                <div>Phương thức thanh toán</div>
+                                <div>
+                                    <input type="radio" name="paymentmethod" id="paymentmethod" /> &nbsp;
+                                    <label>Thanh toán khi nhận hàng</label>
+                                </div>
+                                <br></br>
+                                <div>
+                                    <input type="radio" name="paymentmethod" id="paymentmethod" /> &nbsp;
+                                    <label>Thanh toán online</label>
+                                </div>
+                            </div>
                             <div className={cx('sum')}>
                                 <p>Tổng cộng: </p>
                                 <p>{new Intl.NumberFormat('vi-VN').format(total)}đ</p>

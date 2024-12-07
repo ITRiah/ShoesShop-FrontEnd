@@ -5,7 +5,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import styles from './Cart.module.scss';
 
-import { update, removeFromCart } from '~/ultils/session';
+import { updateCart, deleteCart } from '~/ultils/services/cartService';
+
 import { getbyid } from '~/ultils/services/productService';
 
 const cx = classNames.bind(styles);
@@ -15,37 +16,50 @@ function CartItem({ item, onUpdateTotal }) {
     const [product, setProduct] = useState({});
 
     useEffect(() => {
-        const fetchData = async () => {
-            const response = await getbyid(item.product.id);
-            setProduct(response.data[0]);
-        };
-        fetchData();
+        // const fetchData = async () => {
+        //     const response = await getbyid(item.product.id);
+        //     setProduct(response.data[0]);
+        // };
+        // fetchData();
     }, [item]);
 
-    const formatPrice = useMemo(() => new Intl.NumberFormat('vi-VN').format(item.product.price), [item.product.price]);
-
-    const handleUpdate = useCallback(
-        (newQuantity) => {
-            update(item.product, newQuantity);
-            setQuantity(newQuantity);
-            onUpdateTotal();
-        },
-        [item.product, onUpdateTotal],
+    const formatPrice = useMemo(
+        () => new Intl.NumberFormat('vi-VN').format(item.productDetail.price),
+        [item.productDetail.price],
     );
+    const handleUpdate = useCallback((newQuantity) => {
+        setQuantity(newQuantity);
+        const fetchData = async () => {
+            await updateCart({
+                productDetailId: item.productDetail.id,
+                quantity: newQuantity,
+            });
+        };
+
+        fetchData();
+    }, []);
 
     const handleRemoveFromCart = useCallback(() => {
-        removeFromCart(item.product);
-        onUpdateTotal();
-    }, [item.product, onUpdateTotal]);
+        const fetchData = async () => {
+            await deleteCart([item.id]);
+        };
+        fetchData();
+    }, []);
 
     return (
         <tr>
             <td>
-                <img src={item.product.img} alt="n" />
+                <img src={item.productDetail.img} alt="n" />
             </td>
             <td>
                 <div>
-                    <p>{item.product.name}</p>
+                    <p
+                        style={{
+                            maxWidth: '400px',
+                        }}
+                    >
+                        [ Size: {item.productDetail.size} ] - {item.productName}
+                    </p>
                 </div>
             </td>
             <td>{formatPrice}đ</td>
@@ -54,15 +68,12 @@ function CartItem({ item, onUpdateTotal }) {
                     value={quantity}
                     onChange={(e) => {
                         let newQuantity = parseInt(e.target.value);
-                        if (isNaN(newQuantity)) {
-                            newQuantity = 0;
-                        }
+
                         handleUpdate(newQuantity);
                     }}
                     style={{ textAlign: 'center' }}
                     type="number"
                     min="1"
-                    max={product.amount}
                 />
             </td>
             <td>

@@ -99,6 +99,11 @@ function Login() {
                             Tạo tài khoản ngay
                         </Link>
                     </div>
+                    <div>
+                        <Link style={{ marginLeft: 0 }} className={cx('link')} to={routes.forgotPassword}>
+                            Quên mật khẩu?
+                        </Link>
+                    </div>
                 </>
             )}
         </AuthForm>

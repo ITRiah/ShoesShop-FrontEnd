@@ -7,7 +7,7 @@ import { deleted } from '~/ultils/services/productService';
 
 const cx = classNames.bind(styles);
 
-function Product({ props, onEventDeleted, onUpdate }) {
+function Product({ props, onEventDeleted, onUpdate, onCreateDetail, onShowDetail }) {
 
     console.log(props)
 
@@ -35,6 +35,14 @@ function Product({ props, onEventDeleted, onUpdate }) {
     };
 
     const menu = [
+        {
+            title: 'Thêm chi tiết',
+            onClick: onCreateDetail,
+        },
+        {
+            title: 'Xem chi tiết',
+            onClick: onShowDetail,
+        },
         {
             title: 'Sửa',
             onClick: onUpdate,

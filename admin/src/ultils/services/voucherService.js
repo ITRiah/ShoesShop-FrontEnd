@@ -1,14 +1,13 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
-export const getall = async (s, n) => {
+export const getall = async (fromDate, toDate) => {
     try {
-        const res = await httpRequest.get('v1/vouchers/admin', {
-            params: {
-                s: s,
-                n: n,
-            },
+        const res = await httpRequest.post('v1/vouchers/search', {
+            dateFrom: fromDate,
+            dateTo: toDate,
+            role: "ADMIN"
         });
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
     }
@@ -48,7 +47,7 @@ export const create = async (req) => {
 
 export const update = async (req) => {
     try {
-        const res = await httpRequest.update('category/update.php', req);
+        const res = await httpRequest.update('v1/vouchers', req);
         return res;
     } catch (e) {
         console.log(e);

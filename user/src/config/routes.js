@@ -10,7 +10,8 @@ const routes = {
     cart: '/cart',
     login: '/login',
     signup: '/signup',
-    search: 'search/:s',
+    search: '/search/:s',
+    forgotPassword: '/forgot-password',
 };
 
 export default routes;

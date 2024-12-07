@@ -16,7 +16,7 @@ function Home() {
         const fetchData = async () => {
             const response = await getall('', '');
             if (response.statusCode === 200) {
-                setCate(response.data);
+                setCate(response.result);
             } else {
                 setCate([]);
             }
@@ -27,10 +27,7 @@ function Home() {
     return (
         <div className={cx('wrapper')}>
             {cate.map((item) => {
-                if ((item.type === '0' && item.status === '1') || true) {
-                    return <ProductsIntro key={v4()} title={item.name} id={item.id} />;
-                }
-                return null;
+                return <ProductsIntro key={v4()} title={item.name} id={item.id} />;
             })}
         </div>
     );

@@ -1,15 +1,12 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
 export const getall = async (n, s) => {
-    //console.log(req);
     try {
-        const res = await httpRequest.get('v1/users', {
-            params: {
-                email: n,
-                role: s,
-            }
+        const res = await httpRequest.post('v1/users/search', {
+            email: n,
+            role: s ? s : 'ADMIN',
         });
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
     }

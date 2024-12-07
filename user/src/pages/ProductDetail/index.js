@@ -4,105 +4,163 @@ import { useParams } from 'react-router-dom';
 
 import styles from './ProductDetail.module.scss';
 import Button from '~/components/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBoxOpen, faMobileScreen, faMoneyCheck, faShield } from '@fortawesome/free-solid-svg-icons';
-
 import { addCart } from '~/ultils/session';
-
 import { getbyid } from '~/ultils/services/productService';
+import { updateCart } from '~/ultils/services/cartService';
 import routes from '~/config/routes';
 
 const cx = classNames.bind(styles);
 
 function ProductDetail() {
-    const [active, setActive] = useState(false);
+    const [active, setActive] = useState(true);
     const [showMore, setShowMore] = useState(false);
     const [product, setProduct] = useState({});
-    const [content, setContent] = useState([]);
+    const [selectedSize, setSelectedSize] = useState(null); // No default size selected
+    const [selectedColor, setSelectedColor] = useState(null); // No default color selected
+    const [selectedImage, setSelectedImage] = useState(''); // No default image
+    const [selectedPrice, setSelectedPrice] = useState(''); // No default price
+    const [selectedProductDetail, setSelectedProductDetail] = useState(''); // No
 
     const { id } = useParams();
 
     useEffect(() => {
         const fetchData = async () => {
             const response = await getbyid(id);
-            if (response.status === 'success') {
-                console.log(content);
-                setProduct(response.data[0]);
-                setContent(response.data[0].content.split('*||*'));
+            if (response.statusCode === 200) {
+                setProduct(response.data);
+                setSelectedImage(response.data.img);
+                // No need to select a default size, color, or image here
             }
         };
         fetchData();
     }, [id]);
 
-    const addtoCart = () => {
-        const data = {
-            id: id,
-            name: product.title,
-            img: product.avatar,
-            price: product.price,
-        };
-
-        addCart(data);
-        alert('Sản phẩm đã được thêm vào giỏ hàng');
+    const handleSizeClick = (size) => {
+        setSelectedSize(size);
+        const firstMatchingItem = product.productDetailResponseList?.find(
+            (item) => item.size === size && item.color === selectedColor,
+        );
+        if (firstMatchingItem) {
+            setSelectedImage(firstMatchingItem.img);
+            setSelectedPrice(firstMatchingItem.price);
+        }
     };
 
-    const contentStyles = !showMore ? { maxHeight: '200px' } : {};
+    const addtoCart = async () => {
+        if (selectedSize && selectedColor) {
+            const data = {
+                productDetailId: selectedProductDetail.id,
+                quantity: 1,
+            };
+            const response = await updateCart(data);
+            console.log(response);
+            if (response.statusCode === 201) {
+                alert('Sản phẩm đã được thêm vào giỏ hàng');
+            }
+        } else {
+            alert('Vui lòng chọn size và màu sắc');
+        }
+    };
 
-    const formatPrice = new Intl.NumberFormat('vi-VN').format(product.price);
+    // Format price range or selected price
+    const getPriceRange = () => {
+        if (!selectedSize || !selectedColor) {
+            // Calculate the min and max prices from product details
+            const prices = product.productDetailResponseList?.map((item) => item.price) || [];
+            if (prices.length) {
+                const minPrice = Math.min(...prices);
+                const maxPrice = Math.max(...prices);
+                return `${new Intl.NumberFormat('vi-VN').format(minPrice)}đ - ${new Intl.NumberFormat('vi-VN').format(
+                    maxPrice,
+                )}đ`;
+            }
+        }
+        // If size/color is selected, display the selected price
+        return selectedPrice ? new Intl.NumberFormat('vi-VN').format(selectedPrice) + 'đ' : '';
+    };
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('product')}>
                 <div className={cx('img')}>
-                    <img src={product.avatar} alt={product.title} />
+                    <img src={selectedImage || 'default-image-path'} alt={product.name} />
                 </div>
                 <div className={cx('overview')}>
                     <div className={cx('name')}>
-                        <p>{product.title}</p>
-                        <p className={cx('amount')}>Còn lại: {product.amount}</p>
+                        <p>{product.name}</p>
                     </div>
                     <div className={cx('info')}>
-                        <div>{formatPrice + `đ`}</div>
+                        <div>{getPriceRange()}</div> {/* Display price range or selected price */}
                         <div>
-                            <p>Dung lượng:</p>
-                            <p>{content[1]}</p>
+                            <p style={{ marginRight: '10px' }}>Size:</p>
+                            <div>
+                                {product.productDetailResponseList
+                                    ?.reduce((acc, item) => {
+                                        if (!acc.includes(item.size)) acc.push(item.size);
+                                        return acc;
+                                    }, [])
+                                    .sort((a, b) => a - b)
+                                    .map((size) => (
+                                        <p
+                                            key={size}
+                                            onClick={() => handleSizeClick(size)}
+                                            style={{
+                                                display: 'inline-block',
+                                                marginRight: '10px',
+                                                padding: '5px 10px',
+                                                border: '1px solid #ccc',
+                                                borderRadius: '5px',
+                                                cursor: 'pointer',
+                                                fontWeight: selectedSize === size ? 'bold' : 'normal',
+                                                backgroundColor: selectedSize === size ? '#f0f0f0' : 'transparent',
+                                            }}
+                                        >
+                                            {size}
+                                        </p>
+                                    ))}
+                            </div>
                         </div>
                         <div>
-                            <p>Màu sắc:</p>
-                            <p
-                                style={{
-                                    background: product.color,
-                                }}
-                            ></p>
-                        </div>
-                        <div>
-                            <div className={cx('warranty')}>
-                                <h3>Thông tin sản phẩm</h3>
-                                <div>
-                                    <span>
-                                        <FontAwesomeIcon icon={faMobileScreen} />
-                                    </span>
-                                    Mới, đầy đủ phụ kiện từ nhà sản xuất
-                                </div>
-                                <div>
-                                    <span>
-                                        <FontAwesomeIcon icon={faBoxOpen} />
-                                    </span>
-                                    Máy, cáp, sách hướng dẫn, que chọc SIM
-                                </div>
-                                <div>
-                                    <span>
-                                        <FontAwesomeIcon icon={faShield} />
-                                    </span>
-                                    Bảo hành 12 tháng tại trung tâm bảo hành Chính hãng. 1 đổi 1 trong 30 ngày nếu có
-                                    lỗi phần cứng từ nhà sản xuất.
-                                </div>
-                                <div>
-                                    <span>
-                                        <FontAwesomeIcon icon={faMoneyCheck} />
-                                    </span>
-                                    Giá sản phẩm đã bao gồm VAT
-                                </div>
+                            <p style={{ marginRight: '10px' }}>Màu sắc:</p>
+                            <div>
+                                {product.productDetailResponseList
+                                    ?.reduce((acc, item) => {
+                                        if (!acc.find((detail) => detail.color === item.color)) acc.push(item);
+                                        return acc;
+                                    }, [])
+                                    .map((item) => {
+                                        const isAvailable = product.productDetailResponseList.some(
+                                            (detail) => detail.color === item.color && detail.size === selectedSize,
+                                        );
+
+                                        return (
+                                            <span
+                                                key={item.color}
+                                                onClick={() => {
+                                                    if (isAvailable) {
+                                                        setSelectedColor(item.color);
+                                                        setSelectedImage(item.img);
+                                                        setSelectedPrice(item.price);
+                                                        setSelectedProductDetail(item);
+                                                    }
+                                                }}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: '30px',
+                                                    height: '30px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: item.color,
+                                                    marginRight: '10px',
+                                                    cursor: isAvailable ? 'pointer' : 'not-allowed',
+                                                    border:
+                                                        selectedColor === item.color
+                                                            ? '3px solid #333'
+                                                            : '1px solid #000',
+                                                    opacity: isAvailable ? 1 : 0.3,
+                                                }}
+                                            ></span>
+                                        );
+                                    })}
                             </div>
                         </div>
                     </div>
@@ -123,70 +181,31 @@ function ProductDetail() {
             <div className={cx('detail')}>
                 <div className={cx('btn-sl')}>
                     <Button
-                        onClick={() => {
-                            setActive(true);
-                        }}
+                        onClick={() => setActive(true)}
                         style={!active ? { border: '1px solid #eee', color: '#ccc' } : {}}
                         outline
                     >
                         Mô tả
                     </Button>
                     <Button
-                        onClick={() => {
-                            setActive(false);
-                        }}
+                        onClick={() => setActive(false)}
                         style={active ? { border: '1px solid #eee', color: '#ccc' } : {}}
                         outline
                     >
-                        Thông Số Kỹ Thuật
+                        Nhà cung cấp
                     </Button>
                 </div>
-
                 {active ? (
                     <div className={cx('describe')}>
-                        <div className={cx('text')} style={contentStyles}>
-                            {product.summary}
-                            <br />
-                            <br />
-                        </div>
+                        <div className={cx('text')}>{product.summary}</div>
                         <div className={cx('btn')}>
-                            <Button
-                                onClick={() => {
-                                    setShowMore(!showMore);
-                                }}
-                                text
-                            >
+                            <Button onClick={() => setShowMore(!showMore)} text>
                                 {showMore ? 'Thu gọn' : 'Xem Thêm'}
                             </Button>
                         </div>
                     </div>
                 ) : (
-                    <div className={cx('parameter')}>
-                        <div className={cx('row')}>
-                            <p>RAM</p>
-                            <p>{content[0]}</p>
-                        </div>
-                        <div className={cx('row')}>
-                            <p>Dung lượng</p>
-                            <p>{content[1]}</p>
-                        </div>
-                        <div className={cx('row')}>
-                            <p>Công Nghệ Màn Hình</p>
-                            <p>{content[2]}</p>
-                        </div>
-                        <div className={cx('row')}>
-                            <p>Độ Phân Giải</p>
-                            <p>{content[3]}</p>
-                        </div>
-                        <div className={cx('row')}>
-                            <p>Tần Số Quét</p>
-                            <p>{content[4]}</p>
-                        </div>
-                        <div className={cx('row')}>
-                            <p>Chất Liệu</p>
-                            <p>{content[5]}</p>
-                        </div>
-                    </div>
+                    <div className={cx('parameter')}></div>
                 )}
             </div>
         </div>

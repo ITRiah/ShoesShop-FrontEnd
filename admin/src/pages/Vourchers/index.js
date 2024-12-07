@@ -16,6 +16,8 @@ function Vourchers() {
     const [data, setData] = useState([]);
     const [status, setStatus] = useState('');
     const [name, setName] = useState('');
+    const [fromDate, setFromDate] = useState('');
+    const [toDate, setToDate] = useState('');
     const [deleted, setDeleted] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [idShow, setIdShow] = useState('');
@@ -24,8 +26,8 @@ function Vourchers() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getall(status, name);
-                if (response.status === 'fail') {
+                const response = await getall(fromDate, toDate);
+                if (response.statusCode !== 200) {
                     setData([]);
                 } else {
                     setData(response.result);
@@ -37,7 +39,7 @@ function Vourchers() {
         };
 
         fetchData();
-    }, [deleted, isCreated, status, name]);
+    }, [deleted, isCreated, fromDate, toDate]);
 
     const onEventDeleted = (id) => {
         setDeleted(id);
@@ -68,9 +70,9 @@ function Vourchers() {
                             Add={() => {
                                 setShowForm(true);
                             }}
-                            search={(name, s) => {
-                                setName(name);
-                                setStatus(s);
+                            search={(fromDate, toDate) => {
+                                setFromDate(fromDate);
+                                setToDate(toDate);
                             }}
                         />
                     </div>
