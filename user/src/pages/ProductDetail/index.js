@@ -2,6 +2,8 @@ import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { useNavigate } from 'react-router-dom';
+
 import styles from './ProductDetail.module.scss';
 import Button from '~/components/Button';
 import { addCart } from '~/ultils/session';
@@ -22,6 +24,7 @@ function ProductDetail() {
     const [selectedProductDetail, setSelectedProductDetail] = useState(''); // No
 
     const { id } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,13 +55,22 @@ function ProductDetail() {
                 productDetailId: selectedProductDetail.id,
                 quantity: 1,
             };
-            const response = await updateCart(data);
-            console.log(response);
-            if (response.statusCode === 201) {
-                alert('Sản phẩm đã được thêm vào giỏ hàng');
+            try {
+                const response = await updateCart(data); // Đợi xử lý cập nhật giỏ hàng
+                if (response.statusCode === 201) {
+                    alert('Sản phẩm đã được thêm vào giỏ hàng');
+                    return true; // Thành công
+                } else {
+                    alert('Không thể thêm sản phẩm vào giỏ hàng');
+                    return false; // Lỗi
+                }
+            } catch (error) {
+                alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng');
+                return false; // Lỗi
             }
         } else {
             alert('Vui lòng chọn size và màu sắc');
+            return false; // Không đủ thông tin
         }
     };
 
@@ -91,6 +103,12 @@ function ProductDetail() {
                     </div>
                     <div className={cx('info')}>
                         <div>{getPriceRange()}</div> {/* Display price range or selected price */}
+                        {selectedProductDetail ? (
+                            <div>
+                                <p style={{ marginRight: '10px' }}>Số lượng:</p>
+                                <span>{selectedProductDetail.quantity}</span>
+                            </div>
+                        ) : null}
                         <div>
                             <p style={{ marginRight: '10px' }}>Size:</p>
                             <div>
@@ -171,7 +189,16 @@ function ProductDetail() {
                             <Button onClick={addtoCart} outline large>
                                 Thêm Vào Giỏ Hàng
                             </Button>
-                            <Button to={routes.cart} onClick={addtoCart} primary large>
+                            <Button
+                                onClick={async () => {
+                                    const success = await addtoCart(); // Gọi hàm addtoCart và chờ xử lý
+                                    if (success) {
+                                        navigate(routes.cart);
+                                    }
+                                }}
+                                primary
+                                large
+                            >
                                 Mua Ngay
                             </Button>
                         </div>

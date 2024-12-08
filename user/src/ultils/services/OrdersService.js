@@ -16,7 +16,7 @@ export const getall = async (id, t) => {
 
 export const create = async (req) => {
     try {
-        const res = await httpRequest.post('orders/post.php', req);
+        const res = await httpRequest.post('v1/orders', req);
         return res;
     } catch (error) {
         console.log(error);
@@ -75,6 +75,35 @@ export const deleted = async (id) => {
             },
         });
         return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const payments_vnpay = async (amount) => {
+    try {
+        const res = await httpRequest.get('v1/payments/vn-pay?amount=' + amount, {});
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const payments_response = async (urlResponse) => {
+    try {
+        fetch(urlResponse)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log('payment res', data);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
     } catch (error) {
         console.log(error);
     }

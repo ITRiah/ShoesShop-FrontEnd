@@ -33,26 +33,9 @@ export const topprice = async () => {
     }
 };
 
-export const getbyid = async (id) => {
+export const getProfile = async (user) => {
     try {
-        const res = await httpRequest.get('customer/getbyid.php', {
-            params: {
-                id: id,
-            },
-        });
-        return res;
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-export const getbyuser = async (user) => {
-    try {
-        const res = await httpRequest.get('customer/getbyusername.php', {
-            params: {
-                username: user,
-            },
-        });
+        const res = await httpRequest.get('v1/users', {});
         return res;
     } catch (error) {
         console.log(error);
@@ -61,7 +44,7 @@ export const getbyuser = async (user) => {
 
 export const update = async (req) => {
     try {
-        const res = await httpRequest.update('customer/update.php', req);
+        const res = await httpRequest.update('v1/users', req);
         return res.data;
     } catch (e) {
         console.log(e);
@@ -71,11 +54,12 @@ export const update = async (req) => {
 export const register = async (req) => {
     try {
         const res = await httpRequest.post('v1/users', {
-            firstname: req.first_name,
-            lastname: req.last_name,
+            firstName: req.firstName,
+            lastName: req.lastName,
             email: req.email,
             password: req.password,
             username: req.username,
+            role: 'USER',
         });
 
         return res.data;
@@ -115,5 +99,14 @@ export const updatePassword = async (req) => {
     } catch (error) {
         console.log(error);
         return error.response.data;
+    }
+};
+
+export const changePassword = async (req) => {
+    try {
+        const res = await httpRequest.update('v1/users/password', req);
+        return res.data;
+    } catch (error) {
+        console.log(error);
     }
 };

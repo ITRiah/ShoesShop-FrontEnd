@@ -36,6 +36,10 @@ function Header() {
                       to: routes.profile,
                   },
                   {
+                      name: 'Đổi mật khẩu',
+                      to: routes.changePassword,
+                  },
+                  {
                       name: 'Đơn hàng',
                       to: routes.orders,
                   },

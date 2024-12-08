@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import images from '~/assets/images';
 import FormInput from '~/components/AuthForm/FormInput';
-import { getbyid, update } from '~/ultils/services/userService';
+import { getProfile, update } from '~/ultils/services/userService';
 import { getCookie } from '~/ultils/cookie';
 import Button from '~/components/Button';
 
@@ -16,9 +16,10 @@ function Profile() {
         firstName: '',
         lastName: '',
         email: '',
-        phone: '',
+        birthDay: '1970-01-01',
         address: '',
         avatar: '',
+        password: '',
     });
     const [error, setError] = useState(null);
 
@@ -28,33 +29,56 @@ function Profile() {
 
     const handleUpdateAvatar = (e) => {
         const file = e.target.files[0];
-        const reader = new FileReader();
+        if (!file) return;
 
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            setUser((prevUser) => ({ ...prevUser, avatar: reader.result }));
-        };
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Send the file to the API
+        fetch('http://localhost:8080/api/v1/uploads', {
+            method: 'POST',
+            body: formData, // FormData handles the `multipart/form-data` headers automatically
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    // Extract error message from response if possible
+                    return response.json().then((errorData) => {
+                        throw new Error(errorData.message || 'Failed to upload image');
+                    });
+                }
+                return response.json();
+            })
+            .then((data) => {
+                if (!data || !data.data) {
+                    throw new Error('Unexpected response format');
+                }
+
+                setUser((prevUser) => ({ ...prevUser, avatar: data.data }));
+            })
+            .catch((error) => {
+                console.error('Error uploading image:', error.message);
+                alert(`Upload failed: ${error.message}`);
+            });
     };
 
     const handleUpdateUser = async () => {
         try {
             setError(null);
             const data = {
-                id: getCookie('login').id,
+                id: user.id,
                 username: user.userName,
-                first_name: user.firstName,
-                last_name: user.lastName,
-                phone: user.phone,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                birthday: user.birthDay,
                 email: user.email,
                 address: user.address,
                 avatar: user.avatar,
+                role: user.role,
             };
             const response = await update(data);
-            console.log(response);
-            if (response.status === 'success') {
+            if (response.statusCode === 204) {
+                alert('Sửa thông tin thành công!');
                 setError(null);
-
-                // Thành công, làm gì đó
             }
         } catch (err) {
             setError(err.message);
@@ -65,17 +89,20 @@ function Profile() {
         const fetchData = async () => {
             try {
                 setError(null);
-                const response = await getbyid(getCookie('login').id);
-                if (response.status === 'success') {
-                    const data = response.data[0];
+                const response = await getProfile(1);
+                console.log(response);
+                if (response.statusCode === 200) {
+                    const data = response.data;
                     setUser({
+                        id: data.id,
                         userName: data.username,
-                        firstName: data.first_name,
-                        lastName: data.last_name,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        birthDay: data.birthday,
                         email: data.email,
-                        phone: data.phone,
                         address: data.address,
                         avatar: data.avatar,
+                        // password: data.password,
                     });
                     setError(null);
                 }
@@ -127,14 +154,6 @@ function Profile() {
                     />
                     <FormInput
                         type="text"
-                        label="Điện thoại"
-                        value={user.phone || ''}
-                        onChange={(e) => {
-                            setUser((prevUser) => ({ ...prevUser, phone: e.target.value }));
-                        }}
-                    />
-                    <FormInput
-                        type="text"
                         label="Email"
                         value={user.email || ''}
                         onChange={(e) => {
@@ -147,6 +166,15 @@ function Profile() {
                         value={user.address || ''}
                         onChange={(e) => {
                             setUser((prevUser) => ({ ...prevUser, address: e.target.value }));
+                        }}
+                    />
+
+                    <FormInput
+                        type="date"
+                        label="Ngày sinh"
+                        value={user.birthDay}
+                        onChange={(e) => {
+                            setUser((prevUser) => ({ ...prevUser, birthDay: e.target.value }));
                         }}
                     />
                 </div>

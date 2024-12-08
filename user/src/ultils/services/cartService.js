@@ -28,11 +28,7 @@ export const updateCart = async (req) => {
 
 export const deleteCart = async (ids) => {
     try {
-        const res = await httpRequest.deleted('v1/carts/cart-details', {
-            params: {
-                ids: ids,
-            },
-        });
+        const res = await httpRequest.deleted('v1/carts/cart-details?ids=' + ids, {});
         return res.data;
     } catch (error) {
         console.log(error);

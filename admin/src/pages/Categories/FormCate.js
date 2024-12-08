@@ -92,7 +92,7 @@ function FormCate({ onClose, onSuccess, title, id }) {
             const data = {
                 id: id,
                 name: name,
-                image: image
+                image: image,
             };
             const updateData = async () => {
                 const fetchAPI = await update(data);
@@ -103,7 +103,7 @@ function FormCate({ onClose, onSuccess, title, id }) {
         } else {
             const data = {
                 name: name,
-                image: image
+                image: image,
             };
             const postData = async () => {
                 try {

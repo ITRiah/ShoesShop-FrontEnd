@@ -1,3 +1,6 @@
+import { payments_response } from '~/ultils/services/OrdersService';
+import { changePassword } from '~/ultils/services/userService';
+
 const routes = {
     home: '/',
     products: '/products/:id',
@@ -12,6 +15,8 @@ const routes = {
     signup: '/signup',
     search: '/search/:s',
     forgotPassword: '/forgot-password',
+    changePassword: '/change-password',
+    paymentsResponse: '/payments-response',
 };
 
 export default routes;
