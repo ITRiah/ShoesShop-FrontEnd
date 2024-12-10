@@ -17,9 +17,10 @@ export const getall = async (id, t) => {
 export const create = async (req) => {
     try {
         const res = await httpRequest.post('v1/orders', req);
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
+        return error.response.data;
     }
 };
 
@@ -56,7 +57,7 @@ export const getbyid = async (id) => {
 
 export const getbyuserid = async (id) => {
     try {
-        const res = await httpRequest.get('orders/getbyuserid.php', {
+        const res = await httpRequest.get('v1/orders/users', {
             params: {
                 id: id,
             },
@@ -67,16 +68,13 @@ export const getbyuserid = async (id) => {
     }
 };
 
-export const deleted = async (id) => {
+export const deleted = async (id, reason) => {
     try {
-        const res = await httpRequest.deleted('orders/delete.php', {
-            params: {
-                id: id,
-            },
-        });
-        return res;
+        const res = await httpRequest.deleted('v1/orders/orders/' + id + '/cancel?reason=' + reason, {});
+        return res.data;
     } catch (error) {
         console.log(error);
+        return error.response;
     }
 };
 

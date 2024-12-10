@@ -17,6 +17,7 @@ import { getall } from '~/ultils/services/voucherService';
 import { Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCab, faCartPlus } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -24,6 +25,7 @@ function Cart() {
     const [total, setTotal] = useState(0);
     const [items, setItems] = useState([]);
     const [isValid, setIsValid] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedValueVoucher, setSelectedValueVoucher] = useState('');
     const [selectedVoucherObject, setSelectedVoucherObject] = useState(null);
     const [voucherList, setVoucherList] = useState([]);
@@ -140,51 +142,58 @@ function Cart() {
     }, [items, reloadComponent]);
 
     const submit = async () => {
-        const pdIds = [];
-        for (let i = 0; i < items.length; i++) {
-            pdIds.push(items[i].id);
-        }
         if (!isValid) {
-            alert('Vui lòng nhập đủ thông tin liên hệ');
-        } else {
-            const payload = {
-                fullName: billingInfo.fullName,
-                shippingAddress: billingInfo.shippingAddress,
-                shippingMethod: 'FAST',
-                paymentMethod: paymentMethod,
-                phone: billingInfo.phone,
-                note: billingInfo.note,
-                price_total: total,
-                cartDetailIds: pdIds,
-                voucherId: selectedVoucherObject ? selectedVoucherObject.id : null,
-            };
+            toast.warn('Vui lòng nhập đủ thông tin liên hệ');
+            return;
+        }
+
+        console.log('Submit clicked'); // Kiểm tra nút click hoạt động
+        setIsSubmitting(true); // Disable nút
+        console.log('isSubmitting:', isSubmitting); // Kiểm tra trạng thái sau khi set
+
+        const pdIds = items.map((item) => item.id);
+
+        const payload = {
+            fullName: billingInfo.fullName,
+            shippingAddress: billingInfo.shippingAddress,
+            shippingMethod: 'FAST',
+            paymentMethod: paymentMethod,
+            phone: billingInfo.phone,
+            note: billingInfo.note,
+            price_total: total,
+            cartDetailIds: pdIds,
+            voucherId: selectedVoucherObject ? selectedVoucherObject.id : null,
+        };
+
+        try {
             if (isLogin()) {
                 if (paymentMethod === 'CASH') {
-                    const fetchData = async () => {
-                        const response = await create(payload);
-                        if (response) setReloadComponent(v4());
-                        if (response.statusCode === 200) {
-                            setReloadComponent(v4());
-                            alert('Đặt hàng thành công');
-                        } else {
-                            alert(response.data.message);
-                        }
-                    };
-                    fetchData();
+                    const response = await create(payload);
+                    console.log(response);
+                    if (response.statusCode === 201) {
+                        setReloadComponent(v4());
+                        toast.success('Đặt hàng thành công');
+                    } else {
+                        toast.error(response.message);
+                    }
                 } else {
                     setCookie('billingInfo', billingInfo);
                     setCookie('totalAmounnt', total);
                     setCookie('voucher', selectedVoucherObject);
                     const response = await payments_vnpay(total);
-                    console.log(response.data);
                     if (response.statusCode === 200 && response.data.code === 'ok') {
-                        console.log('redirect');
                         window.open(response.data.paymentUrl, '_blank');
                     }
                 }
             } else {
-                alert('Đăng nhập để đặt hàng');
+                toast.warn('Đăng nhập để đặt hàng');
             }
+        } catch (error) {
+            console.error('Error during submit:', error);
+            toast.error('Có lỗi xảy ra, vui lòng thử lại.');
+        } finally {
+            setIsSubmitting(false); // Enable nút lại sau khi hoàn thành
+            console.log('isSubmitting reset:', isSubmitting);
         }
     };
 
@@ -233,12 +242,12 @@ function Cart() {
                                 <div className={cx('billing-info')}>
                                     <FormInput
                                         label="Họ tên"
-                                        value={billingInfo.fullName}
+                                        value={billingInfo.fullName ?? ''}
                                         onChange={(e) => setBillingInfo({ ...billingInfo, fullName: e.target.value })}
                                     />
                                     <FormInput
                                         label="Địa chỉ"
-                                        value={billingInfo.shippingAddress}
+                                        value={!!billingInfo.shippingAddress ? billingInfo.shippingAddress : ''}
                                         onChange={(e) =>
                                             setBillingInfo({ ...billingInfo, shippingAddress: e.target.value })
                                         }
@@ -247,7 +256,7 @@ function Cart() {
                                     <div className={cx('contact')}>
                                         <FormInput
                                             label="Điện thoại"
-                                            value={billingInfo.phone}
+                                            value={billingInfo.phone ?? ''}
                                             onChange={(e) => setBillingInfo({ ...billingInfo, phone: e.target.value })}
                                         />
                                     </div>
@@ -357,8 +366,13 @@ function Cart() {
                                         <p>{new Intl.NumberFormat('vi-VN').format(total)}đ</p>
                                     </div>
                                     <div>
-                                        <Button className={cx('btn-submit')} onClick={submit} primary>
-                                            Đặt Hàng
+                                        <Button
+                                            className={cx('btn-submit')}
+                                            onClick={submit}
+                                            primary
+                                            disabled={isSubmitting} // Disable khi đang chờ response
+                                        >
+                                            {isSubmitting ? 'Đang xử lý...' : 'Đặt Hàng'}
                                         </Button>
                                     </div>
                                 </div>

@@ -7,6 +7,7 @@ import { getCookie } from '~/ultils/cookie';
 import Button from '~/components/Button';
 
 import styles from './Profile.module.scss';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -43,6 +44,7 @@ function Profile() {
                 if (!response.ok) {
                     // Extract error message from response if possible
                     return response.json().then((errorData) => {
+                        toast.error(errorData.message || 'Failed to upload image');
                         throw new Error(errorData.message || 'Failed to upload image');
                     });
                 }
@@ -50,6 +52,7 @@ function Profile() {
             })
             .then((data) => {
                 if (!data || !data.data) {
+                    toast.error('Unexpected response format');
                     throw new Error('Unexpected response format');
                 }
 
@@ -57,7 +60,7 @@ function Profile() {
             })
             .catch((error) => {
                 console.error('Error uploading image:', error.message);
-                alert(`Upload failed: ${error.message}`);
+                toast.error(`Upload failed: ${error.message}`);
             });
     };
 
@@ -77,7 +80,7 @@ function Profile() {
             };
             const response = await update(data);
             if (response.statusCode === 204) {
-                alert('Sửa thông tin thành công!');
+                toast.success('Sửa thông tin thành công!');
                 setError(null);
             }
         } catch (err) {

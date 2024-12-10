@@ -2,14 +2,16 @@ import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { toast } from 'react-toastify';
+
 import { useNavigate } from 'react-router-dom';
 
 import styles from './ProductDetail.module.scss';
 import Button from '~/components/Button';
-import { addCart } from '~/ultils/session';
 import { getbyid } from '~/ultils/services/productService';
 import { updateCart } from '~/ultils/services/cartService';
 import routes from '~/config/routes';
+import { isLogin } from '~/ultils/cookie/checkLogin';
 
 const cx = classNames.bind(styles);
 
@@ -50,27 +52,32 @@ function ProductDetail() {
     };
 
     const addtoCart = async () => {
-        if (selectedSize && selectedColor) {
-            const data = {
-                productDetailId: selectedProductDetail.id,
-                quantity: 1,
-            };
-            try {
-                const response = await updateCart(data); // Đợi xử lý cập nhật giỏ hàng
-                if (response.statusCode === 201) {
-                    alert('Sản phẩm đã được thêm vào giỏ hàng');
-                    return true; // Thành công
-                } else {
-                    alert('Không thể thêm sản phẩm vào giỏ hàng');
+        if (isLogin()) {
+            if (selectedSize && selectedColor) {
+                const data = {
+                    productDetailId: selectedProductDetail.id,
+                    quantity: 1,
+                };
+                try {
+                    const response = await updateCart(data); // Đợi xử lý cập nhật giỏ hàng
+                    if (response.statusCode === 201) {
+                        // alert('Sản phẩm đã được thêm vào giỏ hàng');
+                        toast.success('Sản phẩm đã được thêm vào giỏ hàng!');
+                        return true; // Thành công
+                    } else {
+                        toast.error('Không thể thêm sản phẩm vào giỏ hàng');
+                        return false; // Lỗi
+                    }
+                } catch (error) {
+                    toast.error('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng');
                     return false; // Lỗi
                 }
-            } catch (error) {
-                alert('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng');
-                return false; // Lỗi
+            } else {
+                toast.warn('Vui lòng chọn size và màu sắc');
+                return false; // Không đủ thông tin
             }
         } else {
-            alert('Vui lòng chọn size và màu sắc');
-            return false; // Không đủ thông tin
+            toast.error('Đăng nhập để thêm sản phẩm vào giỏ hàng');
         }
     };
 

@@ -6,8 +6,8 @@ import FormInput from '~/components/AuthForm/FormInput';
 import Button from '~/components/Button';
 import { Link } from 'react-router-dom';
 import routes from '~/config/routes';
-import { forgotPassword, updatePassword } from '~/ultils/services/userService'; // Assuming you have the services
-import { getCookie, setCookie } from '~/ultils/cookie';
+import { forgotPassword, updatePassword } from '~/ultils/services/userService';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -15,11 +15,11 @@ function ForgotPassword() {
     const [email, setEmail] = useState('');
     const [otp, setOtp] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
     const [isOtpSent, setIsOtpSent] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [timer, setTimer] = useState(60);
     const [isTimerRunning, setIsTimerRunning] = useState(false);
+    const [isLoading, setIsLoading] = useState(false); // Trạng thái chờ phản hồi
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
@@ -49,25 +49,27 @@ function ForgotPassword() {
 
     const handleSubmitOtpRequest = async (e) => {
         e.preventDefault();
-        setErrorMessage('');
         if (!email) {
-            setErrorMessage('Vui lòng nhập email');
+            toast.warn('Vui lòng nhập email');
             return;
         }
 
+        setIsLoading(true); // Bắt đầu chờ phản hồi
         try {
             const response = await forgotPassword({ email });
-            console.log(response);
             if (response.statusCode === 201) {
                 setIsTimerRunning(true);
                 setTimer(60);
                 setIsOtpSent(true);
-                startTimer(); // Start the timer once OTP is sent
+                startTimer();
+                toast.success('OTP đã được gửi!');
             } else {
-                setErrorMessage(response.message);
+                toast.error(response.message);
             }
         } catch (error) {
-            setErrorMessage('Có lỗi xảy ra, vui lòng thử lại');
+            toast.error('Có lỗi xảy ra, vui lòng thử lại');
+        } finally {
+            setIsLoading(false); // Kết thúc chờ phản hồi
         }
     };
 
@@ -75,19 +77,23 @@ function ForgotPassword() {
         e.preventDefault();
 
         if (!otp || !password) {
-            setErrorMessage('Vui lòng nhập đầy đủ OTP và mật khẩu mới');
+            toast.warn('Vui lòng nhập đầy đủ OTP và mật khẩu mới');
             return;
         }
 
-        const response = await updatePassword({ email, otp, password });
-        console.log(response);
-        if (response.statusCode === 201) {
-            setIsSuccess(true);
-            setTimeout(() => {
-                window.location.href = routes.login; // Redirect to login page after success
-            }, 2000);
-        } else {
-            setErrorMessage(response.message);
+        try {
+            const response = await updatePassword({ email, otp, password });
+            if (response.statusCode === 201) {
+                toast.success('Khôi phục mật khẩu thành công!');
+                setIsSuccess(true);
+                setTimeout(() => {
+                    window.location.href = routes.login;
+                }, 2000);
+            } else {
+                toast.error(response.message);
+            }
+        } catch (error) {
+            toast.error('Có lỗi xảy ra, vui lòng thử lại');
         }
     };
 
@@ -102,10 +108,9 @@ function ForgotPassword() {
                             <div className={cx('wrapper')}>
                                 <FormInput value={email} onChange={handleEmailChange} type="email" label="Email" />
                             </div>
-                            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
                             <div className={cx('btn')}>
-                                <Button onClick={handleSubmitOtpRequest} primary>
-                                    Gửi OTP
+                                <Button onClick={handleSubmitOtpRequest} primary disabled={isLoading}>
+                                    {isLoading ? 'Đang gửi...' : 'Gửi OTP'}
                                 </Button>
                             </div>
                             <div>
@@ -126,13 +131,12 @@ function ForgotPassword() {
                                     label="Mật khẩu mới"
                                 />
                             </div>
-                            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
                             {isTimerRunning ? (
                                 <div>{timer} giây còn lại để nhập OTP</div>
                             ) : (
                                 <div>
-                                    <Button onClick={handleSubmitOtpRequest} outline>
-                                        Lấy OTP mới
+                                    <Button onClick={handleSubmitOtpRequest} outline disabled={isLoading}>
+                                        {isLoading ? 'Đang gửi...' : 'Lấy OTP mới'}
                                     </Button>
                                 </div>
                             )}

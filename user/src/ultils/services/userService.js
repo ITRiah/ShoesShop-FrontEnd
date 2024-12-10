@@ -65,6 +65,7 @@ export const register = async (req) => {
         return res.data;
     } catch (error) {
         console.log(error);
+        return error.response;
     }
 };
 
@@ -77,6 +78,7 @@ export const login = async (req) => {
         return res.data;
     } catch (error) {
         console.log(error);
+        return error.response;
     }
 };
 
@@ -86,6 +88,8 @@ export const forgotPassword = async (req) => {
         return res.data;
     } catch (error) {
         console.log(error);
+
+        return error.response.data;
     }
 };
 
