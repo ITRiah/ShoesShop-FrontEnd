@@ -1,11 +1,14 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
-export const getall = async (n, p, cates, s) => {
+export const getall = async (n, priceBigger, priceLower, cates, procedureIds) => {
     try {
         const res = await httpRequest.post('v1/products/search', {
             role: 'USER',
+            priceLower,
+            priceBigger,
             name: n,
-            categoryIds: cates,
+            categoryIds: [...cates],
+            procedureIds: [...procedureIds],
         });
         return res.data;
     } catch (error) {

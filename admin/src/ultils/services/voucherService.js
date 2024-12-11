@@ -5,7 +5,7 @@ export const getall = async (fromDate, toDate) => {
         const res = await httpRequest.post('v1/vouchers/search', {
             dateFrom: fromDate,
             dateTo: toDate,
-            role: "ADMIN"
+            role: 'ADMIN',
         });
         return res.data;
     } catch (error) {
@@ -15,7 +15,7 @@ export const getall = async (fromDate, toDate) => {
 
 export const getbyid = async (id) => {
     try {
-        const res = await httpRequest.get('v1/vouchers/'+id, {});
+        const res = await httpRequest.get('v1/vouchers/' + id, {});
         return res;
     } catch (error) {
         console.log(error);
@@ -24,13 +24,13 @@ export const getbyid = async (id) => {
 
 export const deleted = async (id) => {
     try {
-        const res = await httpRequest.deleted('category/delete.php', {
+        const res = await httpRequest.deleted('v1/vouchers', {
             params: {
                 id: id,
             },
         });
         console.log(res.data);
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
     }

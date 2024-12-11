@@ -52,7 +52,7 @@ function Vourchers() {
                     id={idShow}
                     title="Thêm Vourcher"
                     onSuccess={(e) => {
-                        if (e === 'success') {
+                        if (e === 204 || e === 201) {
                             setIdShow('');
                             setIsCreated(v4());
                         }

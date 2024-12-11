@@ -1,12 +1,13 @@
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
-import { Button, Form, Modal, Image } from 'react-bootstrap';
+import { Button, Form, Modal, Image, Spinner } from 'react-bootstrap';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 import styles from './Vourchers.module.scss';
 import { create, getbyid, update } from '~/ultils/services/voucherService';
 import { getCookie } from '~/ultils/cookie';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -18,6 +19,21 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
     const [maxMoney, setMaxMoney] = useState('');
     const [expiredTime, setExpiredTime] = useState('');
     const [description, setDescription] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
+
+    // Cập nhật mô tả dựa trên giá trị và số tiền tối đa
+    useEffect(() => {
+        if (value && maxMoney) {
+            setDescription(
+                `Giảm giá ${value}% tối đa ${new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                }).format(maxMoney)}`,
+            );
+        } else {
+            setDescription(''); // Nếu chưa nhập đủ, để trống mô tả
+        }
+    }, [value, maxMoney]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,10 +46,11 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
                     setValue(data.value);
                     setQuantity(data.quantity);
                     setMaxMoney(data.maxMoney);
+                    setImage(data.image);
                     const date = new Date(data.expiredTime);
                     const formattedDate = date.toISOString().split('T')[0];
                     setExpiredTime(formattedDate);
-                    setDescription(data.description);
+                    setDescription(data.description); // Load mô tả nếu có
                 } else {
                     // handle error
                 }
@@ -66,7 +83,6 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
         setDescription(value);
     }
 
-
     function handleSubmit(event) {
         event.preventDefault();
         if (id) {
@@ -78,12 +94,14 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
                 maxMoney: maxMoney,
                 expiredTime: expiredTime,
                 description: description,
-                img: image
+                img: image,
             };
             const updateData = async () => {
                 const fetchAPI = await update(data);
-                onSuccess(fetchAPI.data.status);
-                window.location.reload();
+                if (fetchAPI.data.statusCode === 204 || fetchAPI.data.statusCode === 201) {
+                    toast.success(fetchAPI.data.message);
+                }
+                onSuccess(fetchAPI.data.statusCode);
             };
             updateData();
         } else {
@@ -94,18 +112,20 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
                 maxMoney: maxMoney,
                 expiredTime: expiredTime,
                 description: description,
-                img: image
+                img: image,
             };
             const postData = async () => {
                 try {
                     const fetchAPI = await create(data);
-                    onSuccess(fetchAPI.data.status);
+                    if (fetchAPI.data.statusCode === 204 || fetchAPI.data.statusCode === 201) {
+                        toast.success(fetchAPI.data.message);
+                    }
+                    onSuccess(fetchAPI.data.statusCode);
                 } catch (e) {
                     console.log(e);
                 }
             };
             postData();
-            window.location.reload();
         }
         onClose();
     }
@@ -113,6 +133,8 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
     function handleImageChange(event) {
         const file = event.target.files[0];
         if (!file) return;
+
+        setIsUploading(true);
 
         const formData = new FormData();
         formData.append('file', file);
@@ -124,7 +146,6 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
         })
             .then((response) => {
                 if (!response.ok) {
-                    // Extract error message from response if possible
                     return response.json().then((errorData) => {
                         throw new Error(errorData.message || 'Failed to upload image');
                     });
@@ -141,6 +162,9 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
             .catch((error) => {
                 console.error('Error uploading image:', error.message);
                 alert(`Upload failed: ${error.message}`);
+            })
+            .finally(() => {
+                setIsUploading(false);
             });
     }
 
@@ -152,10 +176,10 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
             <Modal.Body>
                 <Form className="form" onSubmit={handleSubmit}>
                     <Form.Group controlId="formName">
-                        <Form.Label>Mã Vourcher</Form.Label>
+                        <Form.Label>Mã Voucher</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Nhập mã vourcher..."
+                            placeholder="Nhập mã voucher..."
                             value={code}
                             onChange={handleCodeChange}
                         />
@@ -196,11 +220,22 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
                             onChange={handleExpiredTimeChange}
                         />
                     </Form.Group>
+                    {image && (
+                        <div className="mb-3">
+                            <Image src={image} alt="Uploaded" thumbnail />
+                        </div>
+                    )}
                     <Form.Group controlId="image">
                         <Form.Label>Hình ảnh</Form.Label>
                         <Form.Control type="file" onChange={handleImageChange} />
+                        {isUploading && (
+                            <div className="mt-2">
+                                <Spinner animation="border" size="sm" role="status" />
+                                <span className="ms-2">Đang tải lên...</span>
+                            </div>
+                        )}
                     </Form.Group>
-                    
+
                     <Form.Group controlId="formDescription">
                         <Form.Label>Mô tả</Form.Label>
                         <ReactQuill value={description} onChange={handleDescriptionChange} placeholder="Nhập mô tả" />
@@ -211,8 +246,8 @@ function FormVoucher({ onClose, onSuccess, title, id }) {
                 <Button variant="secondary" onClick={onClose}>
                     Đóng
                 </Button>
-                <Button onClick={handleSubmit} variant="primary" type="submit">
-                    {id ? 'Update' : 'Create'}
+                <Button onClick={handleSubmit} variant="primary" type="submit" disabled={isUploading}>
+                    {id ? 'Cập nhật' : 'Tạo mới'}
                 </Button>
             </Modal.Footer>
         </Modal>

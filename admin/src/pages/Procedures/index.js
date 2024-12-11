@@ -9,6 +9,7 @@ import FormProceDure from './FormProceDure';
 import FormFilter from './FormFilter';
 
 import { getall } from '~/ultils/services/proceduresService';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -25,14 +26,15 @@ function Procedures() {
         const fetchData = async () => {
             try {
                 const response = await getall(status, name);
-                if (response.status === 'fail') {
-                    setData([]);
-                } else {
+                if (response.statusCode === 200) {
                     setData(response.result);
+                } else {
+                    setData([]);
                 }
             } catch (error) {
                 // Xử lý lỗi khi gọi API
                 console.log(error);
+                toast.error(error.message);
             }
         };
 
@@ -50,7 +52,7 @@ function Procedures() {
                     id={idShow}
                     title="Thêm Nhà Cung Cấp"
                     onSuccess={(e) => {
-                        if (e === 'success') {
+                        if (e === 204 || e === 201) {
                             setIdShow('');
                             setIsCreated(v4());
                         }

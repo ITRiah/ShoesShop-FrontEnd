@@ -1,21 +1,16 @@
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
-import { Button, Form, Modal, Image } from 'react-bootstrap';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-
+import { Button, Form, Modal, Image, Spinner } from 'react-bootstrap';
 import styles from './Categories.module.scss';
 import { create, getbyid, update } from '~/ultils/services/categoriesService';
-import { getCookie } from '~/ultils/cookie';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
 function FormCate({ onClose, onSuccess, title, id }) {
     const [name, setName] = useState('');
     const [image, setImage] = useState('');
-    const [description, setDescription] = useState('');
-    const [status, setStatus] = useState(1);
-    const [type, setType] = useState('product');
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,10 +20,7 @@ function FormCate({ onClose, onSuccess, title, id }) {
                 if (response.statusCode === 200) {
                     const data = response.data;
                     setName(data.name);
-                    setType(data.type);
-                    setImage(data.avatar);
-                    setDescription(data.des);
-                    setStatus(data.status);
+                    setImage(data.img);
                 } else {
                     // handle error
                 }
@@ -45,6 +37,8 @@ function FormCate({ onClose, onSuccess, title, id }) {
         const file = event.target.files[0];
         if (!file) return;
 
+        setIsUploading(true);
+
         const formData = new FormData();
         formData.append('file', file);
 
@@ -55,7 +49,6 @@ function FormCate({ onClose, onSuccess, title, id }) {
         })
             .then((response) => {
                 if (!response.ok) {
-                    // Extract error message from response if possible
                     return response.json().then((errorData) => {
                         throw new Error(errorData.message || 'Failed to upload image');
                     });
@@ -72,22 +65,16 @@ function FormCate({ onClose, onSuccess, title, id }) {
             .catch((error) => {
                 console.error('Error uploading image:', error.message);
                 alert(`Upload failed: ${error.message}`);
+            })
+            .finally(() => {
+                setIsUploading(false);
             });
-    }
-
-    function handleDescriptionChange(value) {
-        setDescription(value);
-    }
-
-    function handleTypeChange(event) {
-        setType(event.target.value);
-    }
-    function handelStatusChange(event) {
-        setStatus(event.target.value);
     }
 
     function handleSubmit(event) {
         event.preventDefault();
+        if (isUploading) return; // Prevent submission while uploading
+
         if (id) {
             const data = {
                 id: id,
@@ -96,8 +83,10 @@ function FormCate({ onClose, onSuccess, title, id }) {
             };
             const updateData = async () => {
                 const fetchAPI = await update(data);
-                onSuccess(fetchAPI.data.status);
-                window.location.reload();
+                if (fetchAPI.data.statusCode === 204 || fetchAPI.data.statusCode === 201) {
+                    toast.success(fetchAPI.data.message);
+                }
+                onSuccess(fetchAPI.data.statusCode);
             };
             updateData();
         } else {
@@ -108,13 +97,15 @@ function FormCate({ onClose, onSuccess, title, id }) {
             const postData = async () => {
                 try {
                     const fetchAPI = await create(data);
-                    onSuccess(fetchAPI.data.status);
+                    if (fetchAPI.data.statusCode === 204 || fetchAPI.data.statusCode === 201) {
+                        toast.success(fetchAPI.data.message);
+                    }
+                    onSuccess(fetchAPI.data.statusCode);
                 } catch (e) {
                     console.log(e);
                 }
             };
             postData();
-            window.location.reload();
         }
         onClose();
     }
@@ -135,17 +126,31 @@ function FormCate({ onClose, onSuccess, title, id }) {
                             onChange={handleNameChange}
                         />
                     </Form.Group>
+
+                    {image && (
+                        <div className="mb-3">
+                            <br />
+                            <Image src={image} alt="Uploaded" thumbnail />
+                        </div>
+                    )}
+
                     <Form.Group controlId="image">
                         <Form.Label>Hình ảnh</Form.Label>
-                        <Form.Control type="file" onChange={handleImageChange} />
+                        <Form.Control type="file" onChange={handleImageChange} disabled={isUploading} />
+                        {isUploading && (
+                            <div className="mt-2">
+                                <Spinner animation="border" size="sm" role="status" />
+                                <span className="ms-2">Đang tải lên...</span>
+                            </div>
+                        )}
                     </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>
+                <Button variant="secondary" onClick={onClose} disabled={isUploading}>
                     Đóng
                 </Button>
-                <Button onClick={handleSubmit} variant="primary" type="submit">
+                <Button onClick={handleSubmit} variant="primary" type="submit" disabled={isUploading}>
                     {id ? 'Update' : 'Create'}
                 </Button>
             </Modal.Footer>

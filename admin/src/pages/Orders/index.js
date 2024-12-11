@@ -9,6 +9,7 @@ import Ellipsis from '~/components/Ellipsis';
 import { getall } from '~/ultils/services/OrdersService';
 import FormFilter from './FormFilter';
 import FormOrder from './FormOrder';
+import { v4 } from 'uuid';
 
 const cx = classNames.bind(styles);
 
@@ -20,6 +21,7 @@ function Orders() {
     const [fullName, setFullName] = useState('');
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
+    const [reloadComponent, setReloadComponent] = useState('');
 
     const col = [
         {
@@ -52,35 +54,33 @@ function Orders() {
         const fetchData = async () => {
             const response = await getall(fullName, fromDate, toDate);
             if (response.statusCode === 200) {
-                const newData = response.result.map(
-                    ({ id, fullName, phone, totalAmount, status}) => {
-                        const menu = [
-                            {
-                                title: 'Chi tiết',
-                                onClick: () => {
-                                    setIdShow(id);
-                                },
+                const newData = response.result.map(({ id, fullName, phone, totalAmount, status }) => {
+                    const menu = [
+                        {
+                            title: 'Chi tiết',
+                            onClick: () => {
+                                setIdShow(id);
                             },
-                        ];
+                        },
+                    ];
 
-                        const formatPrice = new Intl.NumberFormat('vi-VN').format(totalAmount);
-                        return {
-                            id,
-                            fullName,
-                            phone,
-                            totalAmount: formatPrice + 'đ',
-                            status: status,
-                            action: <Ellipsis type2 menu={menu} />,
-                        };
-                    },
-                );
+                    const formatPrice = new Intl.NumberFormat('vi-VN').format(totalAmount);
+                    return {
+                        id,
+                        fullName,
+                        phone,
+                        totalAmount: formatPrice + 'đ',
+                        status: status,
+                        action: <Ellipsis type2 menu={menu} />,
+                    };
+                });
                 setRows(newData);
             } else {
                 setRows([]);
             }
         };
         fetchData();
-    }, [fullName, fromDate, toDate]);
+    }, [fullName, fromDate, toDate, reloadComponent]);
 
     return (
         <div>
@@ -89,6 +89,7 @@ function Orders() {
                     id={idShow}
                     onClose={() => {
                         setIdShow('');
+                        setReloadComponent(v4());
                     }}
                 />
             )}

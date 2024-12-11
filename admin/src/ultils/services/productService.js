@@ -21,7 +21,7 @@ export const deleted = async (id) => {
                 id: id,
             },
         });
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
     }
@@ -49,9 +49,9 @@ export const create = async (req) => {
             description: req.description,
             priceRange: req.price,
             procedure: parseInt(req.procedure_id, 10),
-            status: req.status
+            status: req.status,
         });
-        
+
         return res;
     } catch (error) {
         console.log(error);
@@ -66,9 +66,9 @@ export const createdetail = async (req) => {
             size: req.size,
             quantity: req.quantity,
             img: req.image,
-            price: req.price
+            price: req.price,
         });
-        
+
         return res;
     } catch (error) {
         console.log(error);
@@ -77,9 +77,7 @@ export const createdetail = async (req) => {
 
 export const getalldetails = async (id) => {
     try {
-        const res = await httpRequest.get('v1/product-details/' + id, {
-           
-        });
+        const res = await httpRequest.get('v1/product-details/' + id, {});
         return res.data;
     } catch (error) {
         console.log(error);
@@ -88,8 +86,7 @@ export const getalldetails = async (id) => {
 
 export const getbyid = async (id) => {
     try {
-        const res = await httpRequest.get('v1/products/'+id, {
-        });
+        const res = await httpRequest.get('v1/products/' + id, {});
         return res;
     } catch (error) {
         console.log(error);
@@ -98,8 +95,7 @@ export const getbyid = async (id) => {
 
 export const getdetailbyid = async (id) => {
     try {
-        const res = await httpRequest.get('v1/product-details/'+id, {
-        });
+        const res = await httpRequest.get('v1/product-details/' + id, {});
         return res;
     } catch (error) {
         console.log(error);
@@ -116,7 +112,7 @@ export const update = async (req) => {
             description: req.description,
             priceRange: req.price,
             procedure: parseInt(req.procedure_id, 10),
-            status: req.status
+            status: req.status,
         });
         return res.data;
     } catch (e) {
@@ -133,11 +129,10 @@ export const updatedetail = async (req) => {
             size: req.size,
             quantity: req.quantity,
             img: req.image,
-            price: req.price
+            price: req.price,
         });
         return res.data;
     } catch (e) {
         console.log(e);
     }
 };
-

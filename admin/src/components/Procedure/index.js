@@ -5,6 +5,7 @@ import styles from './Procedure.module.scss';
 import images from '~/assets/images';
 import Ellipsis from '~/components/Ellipsis';
 import { deleted } from '~/ultils/services/proceduresService';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -15,6 +16,9 @@ function Procedure({ props, onEventDeleted, onUpdate }) {
         try {
             setIsDeleting(true);
             const response = await deleted(props.id);
+            if (response.statusCode === 204) {
+                toast.success(response.message);
+            }
             onEventDeleted(props.id); // Notify parent component of deleted event
         } catch (error) {
             console.log(error);
@@ -56,7 +60,6 @@ function Procedure({ props, onEventDeleted, onUpdate }) {
             <div className={cx('info')}>
                 <p>{props.name}</p>
                 <p>Tạo bởi: {props.admin_id}</p>
-                
             </div>
         </div>
     );

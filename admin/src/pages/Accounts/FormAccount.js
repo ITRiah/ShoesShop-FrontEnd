@@ -30,9 +30,12 @@ function FormAccount({ onClose, id }) {
                         <Col md={8}>
                             <p>ID: {customer.id}</p>
                             <p>Username: {customer.username}</p>
-                            <p>First Name: {customer.firstName}</p>
-                            <p>Last Name: {customer.lastName}</p>
+                            <p>Họ: {customer.lastName}</p>
+                            <p>Tên: {customer.firstName}</p>
                             <p>Email: {customer.email}</p>
+                            <p>Ngày sinh: {customer.birthday}</p>
+                            <p>Địa chỉ: {customer.address}</p>
+                            <p>Role: {customer.role}</p>
                             <p>
                                 Trạng thái:
                                 {!customer.isDeleted ? (

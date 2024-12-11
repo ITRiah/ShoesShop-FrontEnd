@@ -10,6 +10,7 @@ export const getall = async (fullName, fromDate, toDate) => {
         return res.data;
     } catch (error) {
         console.log(error);
+        return error.response;
     }
 };
 
@@ -28,6 +29,7 @@ export const count = async () => {
         return res;
     } catch (error) {
         console.log(error);
+        return error.response;
     }
 };
 
@@ -37,6 +39,7 @@ export const getbyid = async (id) => {
         return res;
     } catch (e) {
         console.log(e);
+        return e.response;
     }
 };
 
@@ -50,6 +53,7 @@ export const deleted = async (id) => {
         return res;
     } catch (error) {
         console.log(error);
+        return error.response;
     }
 };
 
@@ -64,6 +68,7 @@ export const update = async (req) => {
         return res.data;
     } catch (e) {
         console.log(e);
+        return e.response;
     }
 };
 
@@ -78,6 +83,7 @@ export const statistic = async (req) => {
         return res;
     } catch (e) {
         console.log(e);
+        return e.response;
     }
 };
 
@@ -92,6 +98,7 @@ export const productSales = async (req) => {
         return res;
     } catch (e) {
         console.log(e);
+        return e.response;
     }
 };
 
@@ -106,6 +113,7 @@ export const exportStatistic = async (req) => {
         return res;
     } catch (e) {
         console.log(e);
+        return e.response;
     }
 };
 
@@ -123,5 +131,6 @@ export const exportProductSales = async (req) => {
         return res;
     } catch (e) {
         console.log(e);
+        return e.response;
     }
 };

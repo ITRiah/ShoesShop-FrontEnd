@@ -84,7 +84,6 @@ function Signup() {
                 setErrorMessage(response.message);
             }
         } catch (error) {
-            console.log(error);
             setErrorMessage('Đăng ký không thành công');
         }
     };

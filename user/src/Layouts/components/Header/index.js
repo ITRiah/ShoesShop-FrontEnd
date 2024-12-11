@@ -75,7 +75,7 @@ function Header() {
 
     const handleToggleSearch = () => {
         if (search) {
-            navigate('/search/' + search);
+            navigate('/search?s=' + search);
         } else {
             setShowSearch(!showSearch);
         }

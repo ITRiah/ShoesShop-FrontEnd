@@ -93,7 +93,6 @@ function Profile() {
             try {
                 setError(null);
                 const response = await getProfile(1);
-                console.log(response);
                 if (response.statusCode === 200) {
                     const data = response.data;
                     setUser({

@@ -30,7 +30,6 @@ export const update = (product, newQuantity) => {
             ...existingItem,
             quantity: newQuantity,
         };
-        console.log(updatedItem);
         const updatedCartItems = cartItems.map((item) => (item === existingItem ? updatedItem : item));
         localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
     }

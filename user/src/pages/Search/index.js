@@ -1,75 +1,142 @@
+import { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import SearchForm from '~/components/SearchForm';
-
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-
-import styles from './Search.module.scss';
-import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getall } from '~/ultils/services/productService';
+import { getall as getAllCate } from '~/ultils/services/categoriesService';
+import { getall as getAllProcedure } from '~/ultils/services/proceduresService';
 import Button from '~/components/Button';
 import ProductItem from '~/components/ProductItem';
 import { v4 } from 'uuid';
+import useDebounce from '~/hooks/useDebounce';
+import styles from './Search.module.scss';
 
 const cx = classNames.bind(styles);
 
 function Search() {
-    const [searchValue, setsearchValue] = useState('');
+    const [searchValue, setSearchValue] = useState('');
     const [data, setData] = useState([]);
     const [sort, setSort] = useState(1);
+    const [cates, setCates] = useState([]);
+    const [cateIdCheckedList, setCateIdCheckedList] = useState([]);
+    const [procedures, setProcedures] = useState([]);
+    const [procedureIdCheckedList, setProcedureIdCheckedList] = useState([]);
     const [limit, setLimit] = useState([0, 0]);
-    const { s } = useParams();
+    const [showAllCategories, setShowAllCategories] = useState(false);
 
+    const location = useLocation();
     const navigate = useNavigate();
 
+    const queryParams = new URLSearchParams(location.search);
+    const s = queryParams.get('s');
+    const debouncedSearchValue = useDebounce(searchValue, 500);
+
     useEffect(() => {
-        setsearchValue(s);
+        const initialSearchValue = s ? s : '';
+        setSearchValue(initialSearchValue);
+
         const fetchData = async () => {
-            const resposne = await getall(searchValue, 1, 1, 1);
-            if (resposne.statusCode === 200) {
-                setData(resposne.result);
+            const response = await getall(
+                debouncedSearchValue,
+                limit[1] > 0 ? limit : '',
+                limit[0],
+                cateIdCheckedList,
+                procedureIdCheckedList, // Thêm thủ tục vào API
+            );
+            if (response.statusCode === 200) {
+                setData(response.result);
+            } else {
+                setData([]);
+            }
+        };
+
+        if (debouncedSearchValue || s || searchValue === '') {
+            fetchData();
+        }
+    }, [debouncedSearchValue, s, sort, limit, cateIdCheckedList, procedureIdCheckedList]);
+
+    const handleSearchChange = (e) => {
+        const newSearchValue = e.target.value;
+        setSearchValue(newSearchValue);
+        navigate(`?s=${newSearchValue}`);
+    };
+
+    useEffect(() => {
+        const fetchDataCate = async () => {
+            const response = await getAllCate();
+            if (response.statusCode === 200) {
+                setCates(response.result);
+            } else {
+                setCates([]);
+            }
+        };
+
+        const fetchDataProcedure = async () => {
+            const response = await getAllProcedure();
+            if (response.statusCode === 200) {
+                setProcedures(response.result);
+            } else {
+                setProcedures([]);
+            }
+        };
+
+        fetchDataCate();
+        fetchDataProcedure();
+    }, []);
+
+    const handleCategoryChange = (e) => {
+        const categoryId = e.target.value;
+        setCateIdCheckedList((prevList) => {
+            if (e.target.checked) {
+                return prevList.includes(categoryId) ? prevList : [...prevList, categoryId];
+            } else {
+                return prevList.filter((id) => id !== categoryId);
+            }
+        });
+    };
+
+    const handleProcedureChange = (e) => {
+        const procedureId = e.target.value;
+        setProcedureIdCheckedList((prevList) => {
+            if (e.target.checked) {
+                return prevList.includes(procedureId) ? prevList : [...prevList, procedureId];
+            } else {
+                return prevList.filter((id) => id !== procedureId);
+            }
+        });
+    };
+
+    const handleClearFilters = () => {
+        setSort(1);
+        setLimit([0, 0]);
+        setCateIdCheckedList([]);
+        setProcedureIdCheckedList([]);
+        setSearchValue('');
+        navigate('?');
+
+        // Gọi lại fetchData sau khi reset state
+        const fetchData = async () => {
+            const response = await getall('', '', '', [], []);
+            if (response.statusCode === 200) {
+                setData(response.result);
             } else {
                 setData([]);
             }
         };
         fetchData();
-    }, [s, sort, limit]);
+    };
+
+    const handleShowMoreCategories = () => {
+        setShowAllCategories(!showAllCategories);
+    };
 
     return (
         <div className={cx('wrapper')}>
             <div className={cx('sidebar')}>
                 <div className={cx('search-box')}>
-                    <SearchForm
-                        className={cx('input')}
-                        value={searchValue}
-                        onChange={(e) => {
-                            setsearchValue(e.target.value);
-                        }}
-                    />
-                    <Button
-                        primary
-                        onClick={() => {
-                            if (searchValue) {
-                                navigate('/search/' + searchValue);
-                            }
-                        }}
-                    >
-                        Tìm kiếm
-                    </Button>
+                    <SearchForm className={cx('input')} value={searchValue} onChange={handleSearchChange} />
                 </div>
                 <div className={cx('filter')}>
-                    <div className={cx('filter_item')}>
-                        {/* <p>Sắp xếp theo:</p>
-                        <select
-                            value={sort}
-                            onChange={(e) => {
-                                setSort(e.target.value);
-                            }}
-                        >
-                            <option value="1">Giá tăng dần</option>
-                            <option value="2">Giá giảm dần</option>
-                        </select> */}
-                    </div>
                     <div className={cx('filter_price')}>
                         <div className={cx('filter_item')}>
                             <p>Giá từ:</p>
@@ -95,27 +162,65 @@ function Search() {
                                 type="number"
                             />
                         </div>
+                        <div className={cx('filter_checkbox')}>
+                            <p>Danh mục</p>
+                            {cates.slice(0, showAllCategories ? cates.length : 3).map((cate) => (
+                                <div key={cate.id} className={cx('checkbox-item')}>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            value={cate.id}
+                                            checked={cateIdCheckedList.includes(cate.id + '')}
+                                            onChange={handleCategoryChange}
+                                        />
+                                        <span>{cate.name}</span>
+                                    </label>
+                                </div>
+                            ))}
+                            {cates.length > 3 && (
+                                <Button onClick={handleShowMoreCategories} className={cx('showBtn')}>
+                                    {showAllCategories ? 'Thu gọn' : 'Xem thêm'}
+                                </Button>
+                            )}
+                        </div>
+                        <div className={cx('filter_checkbox')}>
+                            <p>Nhà cung cấp</p>
+                            {procedures.slice(0, showAllCategories ? procedures.length : 3).map((procedure) => (
+                                <div key={procedure.id} className={cx('checkbox-item')}>
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            value={procedure.id}
+                                            checked={procedureIdCheckedList.includes(procedure.id + '')}
+                                            onChange={handleProcedureChange}
+                                        />
+                                        <span>{procedure.name}</span>
+                                    </label>
+                                </div>
+                            ))}
+                            {procedures.length > 3 && (
+                                <Button onClick={handleShowMoreCategories} className={cx('showBtn')}>
+                                    {showAllCategories ? 'Thu gọn' : 'Xem thêm'}
+                                </Button>
+                            )}
+                        </div>
                     </div>
                     <div>
-                        <Button
-                            onClick={() => {
-                                setSort(1);
-                                setLimit([0, 0]);
-                            }}
-                        >
-                            Xóa Filter
-                        </Button>
+                        <Button onClick={handleClearFilters}>Xóa Filter</Button>
                     </div>
                 </div>
             </div>
-            {s ? (
-                <div className={cx('result')}>
-                    {data.map((item) => {
-                        return <ProductItem key={v4()} props={item} />;
-                    })}
-                </div>
+            {data.length > 0 ? (
+                <>
+                    <div className={cx('result')}>
+                        {data.map((item) => (
+                            <ProductItem key={v4()} props={item} />
+                        ))}
+                    </div>
+                    <div className={cx('pagination')}></div>
+                </>
             ) : (
-                <div className={cx('result')}>Nhập từ khóa tìm kiếm</div>
+                <div className={cx('showEmty')}>Không có sản phẩm nào phù hợp</div>
             )}
         </div>
     );

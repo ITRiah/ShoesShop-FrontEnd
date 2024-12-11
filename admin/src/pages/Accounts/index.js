@@ -9,6 +9,7 @@ import Ellipsis from '~/components/Ellipsis';
 import FormFilter from './FormFilter';
 import { getall, block } from '~/ultils/services/userService';
 import FormAccount from './FormAccount';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -27,49 +28,46 @@ function Accounts() {
             try {
                 const response = await getall(name, role);
 
-                console.log(response)
-                
+                console.log(response);
+
                 if (response.statusCode !== 200) {
                     setRows([]);
                 } else {
-                    const newData = response.result.map(
-                        ({ id, username, firstName, lastName, email, isDeleted }) => {
-                            const menu = [
-                                {
-                                    title: 'Chi tiết',
-                                    onClick: () => {
-                                        setIdShow(id);
-                                    },
+                    const newData = response.result.map(({ id, username, firstName, lastName, email, isDeleted }) => {
+                        const menu = [
+                            {
+                                title: 'Chi tiết',
+                                onClick: () => {
+                                    setIdShow(id);
                                 },
-                                {
-                                    title: !isDeleted ? 'Block' : 'Unblock',
-                                    onClick: async () => {
-                                        const response = await block({
-                                            id: id
-                                        });
-                                        if (response.statusCode === 201 ) {
-                                            window.location.reload();
-                                            setUpdating(v4());
-                                        }
-                                    },
+                            },
+                            {
+                                title: !isDeleted ? 'Block' : 'Unblock',
+                                onClick: async () => {
+                                    const response = await block({
+                                        id: id,
+                                    });
+                                    if (response.statusCode === 201) {
+                                        toast.success(response.message);
+                                        setUpdating(v4());
+                                    }
                                 },
-                            ];
-                            return {
-                                id,
-                                username,
-                                firstName,
-                                lastName,
-                                email,
-                                status:
-                                    !isDeleted ? (
-                                        <span className="success">Active</span>
-                                    ) : (
-                                        <span className="error">Blocked</span>
-                                    ),
-                                action: <Ellipsis type2 menu={menu} />,
-                            };
-                        },
-                    );
+                            },
+                        ];
+                        return {
+                            id,
+                            username,
+                            firstName,
+                            lastName,
+                            email,
+                            status: !isDeleted ? (
+                                <span className="success">Active</span>
+                            ) : (
+                                <span className="error">Blocked</span>
+                            ),
+                            action: <Ellipsis type2 menu={menu} />,
+                        };
+                    });
                     setRows(newData);
                 }
             } catch (error) {

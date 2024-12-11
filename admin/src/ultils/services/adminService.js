@@ -1,7 +1,6 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
 export const register = async (req) => {
-    //console.log(req);
     try {
         const res = await httpRequest.post('v1/users', {
             firstName: req.firstName,
@@ -12,7 +11,7 @@ export const register = async (req) => {
         });
         return res.data;
     } catch (error) {
-        console.log(error);
+        return error.response;
     }
 };
 
@@ -24,6 +23,6 @@ export const login = async (req) => {
         });
         return res.data;
     } catch (error) {
-        console.log(error);
+        return error.response;
     }
 };

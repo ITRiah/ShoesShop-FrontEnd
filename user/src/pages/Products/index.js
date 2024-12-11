@@ -20,7 +20,7 @@ function Products() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await getall('', '', [id], '');
+            const response = await getall('', '', '', [id], []);
             if (response.statusCode === 200) {
                 setProducts(response.result);
             } else {
@@ -48,11 +48,6 @@ function Products() {
     const contentStyles = !showMore ? { maxHeight: '500px' } : {};
     return (
         <div className={cx('wrapper')}>
-            {cate.img ? (
-                <div>
-                    <img src={cate.img} alt={cate.name} />
-                </div>
-            ) : null}
             <div className={cx('title')}>{cate.name && cate.name}</div>
             <div className={cx('list')}>
                 {products.map((item) => {

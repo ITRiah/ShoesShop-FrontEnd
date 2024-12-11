@@ -13,7 +13,7 @@ const routes = {
     cart: '/cart',
     login: '/login',
     signup: '/signup',
-    search: '/search/:s',
+    search: '/search',
     forgotPassword: '/forgot-password',
     changePassword: '/change-password',
     paymentsResponse: '/payments-response',

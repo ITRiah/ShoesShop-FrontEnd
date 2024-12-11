@@ -50,6 +50,7 @@ function ChangePassword() {
             const response = await changePassword({
                 newPassword: password,
                 oldPassword: oldPassword,
+                role: 'USER',
             });
 
             if (response.statusCode === 200) {
@@ -61,7 +62,6 @@ function ChangePassword() {
                 setErrorMessage(response.message);
             }
         } catch (error) {
-            console.log(error);
             setErrorMessage('Đổi mật khẩu không thành công');
         }
     };

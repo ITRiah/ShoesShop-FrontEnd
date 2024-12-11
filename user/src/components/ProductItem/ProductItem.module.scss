@@ -14,7 +14,7 @@
 }
 .img {
     padding: 7px;
-    min-height: 280px;
+    height: 280px;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -68,4 +68,17 @@
     color: #fff;
     font-size: 2rem;
     opacity: 0.5;
+}
+
+.colors {
+    height: 20px;
+    display: flex;
+    justify-content: right;
+}
+
+.colors p {
+    width: 25px;
+    height: 25px;
+    margin-left: -15px;
+    border-radius: 200px;
 }

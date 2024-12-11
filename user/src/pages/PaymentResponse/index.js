@@ -60,8 +60,6 @@ function PaymentResponse() {
                     voucherId: selectedVoucherObject ? selectedVoucherObject.id : null,
                 };
 
-                console.log(payload);
-
                 if (isLogin()) {
                     const fetchData = async () => {
                         const response = await create(payload);

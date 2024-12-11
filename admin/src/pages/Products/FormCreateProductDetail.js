@@ -1,58 +1,28 @@
 import classNames from 'classnames/bind';
 import { useState, useEffect } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Button, Form, Image, Modal, Spinner } from 'react-bootstrap';
 import 'react-quill/dist/quill.snow.css';
 import { v4 } from 'uuid';
 import styles from './Products.module.scss';
-import { getall } from '~/ultils/services/categoriesService';
-import { getall as getallProce } from '~/ultils/services/proceduresService';
-import { create, createdetail,updatedetail, getbyid, update, getdetailbyid } from '~/ultils/services/productService';
-import { getCookie } from '~/ultils/cookie';
+import { getbyid, createdetail, updatedetail, getdetailbyid } from '~/ultils/services/productService';
+import { toast } from 'react-toastify';
 const cx = classNames.bind(styles);
-function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' }) {
-    console.log("xsssssssssss", idDetail)
-    const [categories, setCategories] = useState([]);
-    const [procedures, setProceDures] = useState([]);
-    const [category, setCategory] = useState('');
-    const [procedure, setProceDure] = useState('');
-    const [titlex, setTitlex] = useState('');
-    const [shortDescription, setShortDescription] = useState('');
-    const [image, setImage] = useState('');
-    const [status, setStatus] = useState('');
 
-    const [color, setColor] = useState('');
+function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' }) {
+    const [titlex, setTitlex] = useState('');
+    const [image, setImage] = useState('');
+    const [color, setColor] = useState('#ffffff'); // Set default to white
     const [size, setSize] = useState('');
     const [quantity, setQuantity] = useState('');
     const [price, setPrice] = useState('');
-
-    useEffect(() => {
-        const fetchCate = async () => {
-            try {
-                const response = await getall('', '');
-                setCategories(response.result);
-            } catch (e) {
-                console.log(e);
-            }
-        };
-        const fetchProce = async () => {
-            try {
-                const response = await getallProce('', '');
-                setProceDures(response.result);
-            } catch (e) {
-                console.log(e);
-            }
-        };
-        fetchCate();
-        fetchProce();
-    }, []);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         if (id) {
             const fetchData = async () => {
                 try {
                     const response = await getbyid(id);
-                    
-                    if(response.statusCode === 200) {
+                    if (response.statusCode === 200) {
                         setTitlex(response.data.name);
                     }
                 } catch (e) {
@@ -66,13 +36,12 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
             const fetchData = async () => {
                 try {
                     const response = await getdetailbyid(idDetail);
-                    
-                    if(response.statusCode === 200) {
-                        setColor(response.data.color);
+                    if (response.statusCode === 200) {
+                        setColor(response.data.color); // Set color from response
                         setSize(response.data.size);
                         setQuantity(response.data.quantity);
                         setPrice(response.data.price);
-                        setImage(response.data.image);
+                        setImage(response.data.img);
                     }
                 } catch (e) {
                     console.log(e);
@@ -80,7 +49,7 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
             };
             fetchData();
         }
-    }, []);
+    }, [id, idDetail]);
 
     function handleColorChange(event) {
         setColor(event.target.value);
@@ -90,38 +59,19 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
         setSize(event.target.value);
     }
 
-
     function handleQuantityChange(event) {
         setQuantity(event.target.value);
-    }
-
-    function handleCategoryChange(event) {
-        setCategory(event.target.value);
-    }
-
-    function handleProcedureChange(event) {
-        setProceDure(event.target.value);
-    }
-
-    function handleTitleChange(event) {
-        setTitlex(event.target.value);
     }
 
     function handlePriceChange(event) {
         setPrice(event.target.value);
     }
 
-    function handleShortDescriptionChange(event) {
-        setShortDescription(event.target.value);
-    }
-
-    function handleStatusChange(event) {
-        setStatus(event.target.value);
-    }
-
     function handleImageChange(event) {
         const file = event.target.files[0];
         if (!file) return;
+
+        setIsUploading(true);
 
         const formData = new FormData();
         formData.append('file', file);
@@ -133,7 +83,6 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
         })
             .then((response) => {
                 if (!response.ok) {
-                    // Extract error message from response if possible
                     return response.json().then((errorData) => {
                         throw new Error(errorData.message || 'Failed to upload image');
                     });
@@ -150,74 +99,67 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
             .catch((error) => {
                 console.error('Error uploading image:', error.message);
                 alert(`Upload failed: ${error.message}`);
+            })
+            .finally(() => {
+                setIsUploading(false);
             });
     }
 
     function handleSubmit(event) {
         event.preventDefault();
-        if (!color || !size || !quantity || !price) {  // !image
+        if (!color || !size || !quantity || !price) {
             alert('Vui lòng nhập đủ thông tin màu sắc, size, số lượng, giá bán');
             return;
         }
-        if (id && !idDetail) {
-            const data = {
-                productId: id,
-                size: size,
-                color: color,
-                price: price,
-                quantity: quantity,
-                image: image
-            };
-            const fetchAPI = async () => {
-                try {
-                    const response = await createdetail(data);
-                    console.log(response);
-                    onSuccess(response.status);
-                } catch (e) {
-                    console.log(e);
-                }
-            };
-            window.location.reload();
-            fetchAPI();
-        }
 
-        if (id && idDetail) {
-            const data = {
-                id: id,
-                productId: id,
-                size: size,
-                color: color,
-                price: price,
-                quantity: quantity,
-                image: image
-            };
-            const fetchAPI = async () => {
-                try {
-                    const response = await updatedetail(data);
-                    console.log(response);
-                    // onSuccess(response.status);
-                } catch (e) {
-                    console.log(e);
+        const data = {
+            id: idDetail,
+            productId: id,
+            size: size,
+            color: color,
+            price: price,
+            quantity: quantity,
+            image: image,
+        };
+
+        const fetchAPI = async () => {
+            try {
+                if (id && !idDetail) {
+                    // Create product detail
+                    const response = await createdetail(data);
+                    if (response.data.statusCode === 201) {
+                        toast.success(response.data.message);
+                    }
+                    onSuccess(response.data.statusCode);
                 }
-            };
-            fetchAPI();
-            // window.location.reload();
-        }
-        
+
+                if (id && idDetail) {
+                    // Update product detail
+                    const response = await updatedetail(data);
+                    if (response.statusCode === 204) {
+                        toast.success(response.message);
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        fetchAPI();
+
         onClose();
     }
 
     const shoeSizes = [
-        { size: 36, description: "Small size, suitable for kids or women with small feet" },
-        { size: 37, description: "Small size" },
-        { size: 38, description: "Small to medium size" },
-        { size: 39, description: "Medium size, most common size for women" },
-        { size: 40, description: "Medium size, common size for women" },
-        { size: 41, description: "Medium size, common size for men" },
-        { size: 42, description: "Large size, suitable for men with average feet" },
-        { size: 43, description: "Large size, suitable for men with large feet" },
-        { size: 44, description: "Large size, often for men" },
-        { size: 45, description: "Very large size, suitable for men with very large feet" }
+        { size: 36, description: 'Small size, suitable for kids or women with small feet' },
+        { size: 37, description: 'Small size' },
+        { size: 38, description: 'Small to medium size' },
+        { size: 39, description: 'Medium size, most common size for women' },
+        { size: 40, description: 'Medium size, common size for women' },
+        { size: 41, description: 'Medium size, common size for men' },
+        { size: 42, description: 'Large size, suitable for men with average feet' },
+        { size: 43, description: 'Large size, suitable for men with large feet' },
+        { size: 44, description: 'Large size, often for men' },
+        { size: 45, description: 'Very large size, suitable for men with very large feet' },
     ];
 
     return (
@@ -239,11 +181,11 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
                         <Form.Label>Size</Form.Label>
                         <Form.Control as="select" value={size} onChange={handleSizeChange}>
                             <option value="">Chọn Size</option>
-                            {shoeSizes.map((size) =>
-                                <option key={v4()} value={size.size}>
-                                    {size.size}
+                            {shoeSizes.map((sizeOption) => (
+                                <option key={v4()} value={sizeOption.size}>
+                                    {sizeOption.size}
                                 </option>
-                            )}
+                            ))}
                         </Form.Control>
                     </Form.Group>
                     <Form.Group controlId="price">
@@ -254,9 +196,21 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
                         <Form.Label>Giá</Form.Label>
                         <Form.Control type="number" value={price} onChange={handlePriceChange} />
                     </Form.Group>
+                    {image && (
+                        <div className="mb-3">
+                            <br />
+                            <Image src={image} alt="Uploaded" thumbnail />
+                        </div>
+                    )}
                     <Form.Group controlId="image">
                         <Form.Label>Hình ảnh</Form.Label>
                         <Form.Control type="file" onChange={handleImageChange} />
+                        {isUploading && (
+                            <div className="mt-2">
+                                <Spinner animation="border" size="sm" role="status" />
+                                <span className="ms-2">Đang tải lên...</span>
+                            </div>
+                        )}
                     </Form.Group>
                 </Form>
             </Modal.Body>
@@ -264,7 +218,7 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
                 <Button variant="secondary" onClick={onClose}>
                     Đóng
                 </Button>
-                <Button variant="primary" onClick={handleSubmit}>
+                <Button variant="primary" onClick={handleSubmit} disabled={isUploading}>
                     Lưu
                 </Button>
             </Modal.Footer>

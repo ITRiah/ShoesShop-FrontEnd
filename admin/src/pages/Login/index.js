@@ -9,6 +9,7 @@ import Button from '~/components/Button';
 import routes from '~/config/routes';
 import { login } from '~/ultils/services/adminService';
 import { setCookie } from '~/ultils/cookie';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -36,18 +37,18 @@ function Login() {
             };
             const response = await login(req);
             if (response.statusCode === 200) {
-                setMessage('Đăng nhập thành công');
+                toast.success('Đăng nhập thành công');
                 setCookie('accessToken', response.data.accessToken);
                 navigate(routes.home);
                 return;
             } else {
-                setError(response.message);
+                toast.error(response.data.message);
                 return;
             }
 
             // Xử lý phản hồi từ server sau khi đăng ký thành công
         } catch (error) {
-            setError('Đăng nhập thất bại.[502]');
+            toast.error(error.data.message);
         }
 
         // Xử lý đăng nhập

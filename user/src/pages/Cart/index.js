@@ -64,7 +64,6 @@ function Cart() {
         if (isLogin()) {
             const fetchData = async () => {
                 const response = await getCart(1);
-                console.log(response.data.cartDetails);
                 if (response.statusCode === 200) {
                     setItems(response.data.cartDetails);
                 }
@@ -147,9 +146,7 @@ function Cart() {
             return;
         }
 
-        console.log('Submit clicked'); // Kiểm tra nút click hoạt động
         setIsSubmitting(true); // Disable nút
-        console.log('isSubmitting:', isSubmitting); // Kiểm tra trạng thái sau khi set
 
         const pdIds = items.map((item) => item.id);
 
@@ -169,7 +166,6 @@ function Cart() {
             if (isLogin()) {
                 if (paymentMethod === 'CASH') {
                     const response = await create(payload);
-                    console.log(response);
                     if (response.statusCode === 201) {
                         setReloadComponent(v4());
                         toast.success('Đặt hàng thành công');
@@ -192,8 +188,7 @@ function Cart() {
             console.error('Error during submit:', error);
             toast.error('Có lỗi xảy ra, vui lòng thử lại.');
         } finally {
-            setIsSubmitting(false); // Enable nút lại sau khi hoàn thành
-            console.log('isSubmitting reset:', isSubmitting);
+            setIsSubmitting(false);
         }
     };
 

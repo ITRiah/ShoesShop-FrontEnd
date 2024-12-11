@@ -5,7 +5,6 @@ import { v4 } from 'uuid';
 import styles from './Products.module.scss';
 import FormProducts from './FormProducts';
 import FormCreateProductDetail from './FormCreateProductDetail';
-import ProductDetailForm from './ProductDetailForm';
 import FormProductDetails from './FormProductDetails';
 import { getall } from '~/ultils/services/productService';
 import WhiteBG from '~/Layouts/DefaultLayout/WhiteBG';
@@ -23,12 +22,9 @@ function Products() {
     const [idShow, setIdShow] = useState('');
     const [idDetailShow, setIdDetailShow] = useState('');
     const [name, setName] = useState('');
-    const [price, setPrice] = useState('');
     const [biggerPrice, setBiggerPrice] = useState('');
     const [lowerPrice, setLowerPrice] = useState('');
     const [procedure, setProcedure] = useState('');
-    const [category, setCategory] = useState('');
-    const [status, setStatus] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,16 +43,18 @@ function Products() {
     };
 
     function onChangeDetailId(detailId) {
-        setFormType('createProductDetail')
-        setIdDetailShow(detailId)
+        setFormType('createProductDetail');
+        setIdDetailShow(detailId);
     }
 
     return (
         <div>
             {(showForm || (idShow && showForm)) && formType === 'product' ? (
                 <FormProducts
-                    onSuccess={() => {
-                        setCreated(v4());
+                    onSuccess={(e) => {
+                        if (e === 204 || e === 201) {
+                            setCreated(v4());
+                        }
                     }}
                     id={idShow}
                     onClose={() => {
@@ -66,14 +64,16 @@ function Products() {
                     title="Thêm Sản Phẩm"
                 />
             ) : null}
-            {(showForm || (idShow && showForm) || (idShow && showForm && idDetailShow)) && formType === 'createProductDetail' ? (
+            {(showForm || (idShow && showForm) || (idShow && showForm && idDetailShow)) &&
+            formType === 'createProductDetail' ? (
                 <FormCreateProductDetail
                     onSuccess={() => {
+                        setIdDetailShow('');
                         setCreated(v4());
                     }}
                     id={idShow}
-                    
                     onClose={() => {
+                        setIdDetailShow('');
                         setShowForm(false);
                         setIdShow('');
                     }}
@@ -92,7 +92,7 @@ function Products() {
                         setIdShow('');
                     }}
                     onEventDeleted={onEventDeleted}
-                    onChangeDetailId = {onChangeDetailId}
+                    onChangeDetailId={onChangeDetailId}
                     title="Chi Tiết Sản Phẩm"
                 />
             ) : null}
@@ -106,7 +106,7 @@ function Products() {
                             }}
                             search={(n, p, c, s) => {
                                 setName(n);
-                                setBiggerPrice(p); 
+                                setBiggerPrice(p);
                                 setLowerPrice(c);
                                 setProcedure(s);
                             }}
@@ -122,14 +122,15 @@ function Products() {
                                         setFormType('product');
                                     }}
                                     onCreateDetail={() => {
+                                        setIdDetailShow('');
                                         setShowForm(true);
                                         setIdShow(props.id);
-                                        setFormType('createProductDetail')
+                                        setFormType('createProductDetail');
                                     }}
                                     onShowDetail={() => {
                                         setShowForm(true);
                                         setIdShow(props.id);
-                                        setFormType('productDetails')
+                                        setFormType('productDetails');
                                     }}
                                     onEventDeleted={onEventDeleted}
                                     key={v4()}

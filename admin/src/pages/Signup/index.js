@@ -8,6 +8,7 @@ import routes from '~/config/routes';
 import { register } from '~/ultils/services/adminService';
 import styles from './Signup.module.scss';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -56,19 +57,15 @@ function Signup() {
             const response = await register(req);
 
             if (response.statusCode === 201) {
-                alert('Đăng ký thành công!');
-                navigate(routes.login)
+                toast.success('Đăng ký thành công!');
+                navigate(routes.login);
                 return;
             } else {
-                setError(response.message);
+                toast.error(response.data.message);
                 return;
             }
-
-            //console.log(response);
-            // Xử lý phản hồi từ server sau khi đăng ký thành công
         } catch (error) {
-            console.log(error);
-            setError('Đăng ký thất bại');
+            toast.error(error.data.message);
         }
     };
 

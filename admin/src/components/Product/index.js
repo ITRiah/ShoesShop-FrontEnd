@@ -4,18 +4,19 @@ import React from 'react';
 import styles from './Product.module.scss';
 import Ellipsis from '~/components/Ellipsis';
 import { deleted } from '~/ultils/services/productService';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
 function Product({ props, onEventDeleted, onUpdate, onCreateDetail, onShowDetail }) {
-
-    console.log(props)
-
     const formatPrice = new Intl.NumberFormat('vi-VN').format(props.priceRange);
 
     const handleDelete = async () => {
         try {
-            const response = await deleted(props.id);   
+            const response = await deleted(props.id);
+            if (response.statusCode === 204) {
+                toast.success(response.message);
+            }
             onEventDeleted(props.id);
         } catch (error) {
             console.log(error);
@@ -25,11 +26,11 @@ function Product({ props, onEventDeleted, onUpdate, onCreateDetail, onShowDetail
     };
 
     const handleDeleteConfirmation = () => {
-        if(!props.isDeleted) {
+        if (!props.isDeleted) {
             if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
                 handleDelete();
             }
-        }else {
+        } else {
             handleDelete();
         }
     };
@@ -70,7 +71,7 @@ function Product({ props, onEventDeleted, onUpdate, onCreateDetail, onShowDetail
                     </div>
                     <div className={cx('right-info')}>
                         {props.isDeleted ? (
-                             <p style={{ color: 'red' }}>Đã xóa</p>
+                            <p style={{ color: 'red' }}>Đã xóa</p>
                         ) : (
                             <p style={{ color: 'green' }}>Đang bán</p>
                         )}

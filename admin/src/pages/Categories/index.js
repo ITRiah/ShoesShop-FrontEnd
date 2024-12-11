@@ -50,7 +50,7 @@ function Categories() {
                     id={idShow}
                     title="Thêm Danh Mục"
                     onSuccess={(e) => {
-                        if (e === 'success') {
+                        if (e === 204 || e === 201) {
                             setIdShow('');
                             setIsCreated(v4());
                         }

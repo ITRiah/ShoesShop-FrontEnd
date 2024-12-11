@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { getbyid, update } from '~/ultils/services/OrdersService';
 import { v4 } from 'uuid';
+import { toast } from 'react-toastify';
 
 function FormOrder({ onClose, id }) {
     const [orderData, setOrderData] = useState(null);
@@ -36,16 +37,28 @@ function FormOrder({ onClose, id }) {
         { status: 'SHIPPED' },
     ];
 
-    function onUpdateOrder(event) {
-        event.preventDefault();
+    function onUpdateOrder() {
         if (id) {
             const data = {
                 id: id,
                 status: status,
             };
             const updateData = async () => {
-                const fetchAPI = await update(data);
-                window.location.reload();
+                try {
+                    const fetchAPI = await update(data);
+                    console.log(fetchAPI);
+                    if (fetchAPI.statusCode === 201) {
+                        toast.success('Cập nhật trạng thái thành công!');
+                        const refreshedData = await getbyid(id); // Reload data
+                        setOrderData(refreshedData.data);
+                        setProducts(refreshedData.data.orderDetails);
+                    } else {
+                        toast.error('Cập nhật thất bại.');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    toast.error('Đã xảy ra lỗi khi cập nhật.');
+                }
             };
             updateData();
         }
@@ -111,27 +124,24 @@ function FormOrder({ onClose, id }) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {products.map((item, index) => {
-                                    console.log('Product', item);
-                                    return (
-                                        <tr key={v4()}>
-                                            <td>{item.id}</td>
-                                            <td>{item.productDetail.color}</td>
-                                            <td>{item.productDetail.size}</td>
-                                            <td>{item.productDetail.quantity}</td>
-                                            <td
-                                                style={{
-                                                    textAlign: 'right',
-                                                }}
-                                            >
-                                                {new Intl.NumberFormat('vi-VN', {
-                                                    style: 'currency',
-                                                    currency: 'VND',
-                                                }).format(item.productDetail.price)}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                {products.map((item) => (
+                                    <tr key={v4()}>
+                                        <td>{item.id}</td>
+                                        <td>{item.productDetail.color}</td>
+                                        <td>{item.productDetail.size}</td>
+                                        <td>{item.productDetail.quantity}</td>
+                                        <td
+                                            style={{
+                                                textAlign: 'right',
+                                            }}
+                                        >
+                                            {new Intl.NumberFormat('vi-VN', {
+                                                style: 'currency',
+                                                currency: 'VND',
+                                            }).format(item.productDetail.price)}
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </Table>
                         <FormGroup>

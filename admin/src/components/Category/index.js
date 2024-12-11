@@ -5,6 +5,7 @@ import styles from './Category.module.scss';
 import images from '~/assets/images';
 import Ellipsis from '~/components/Ellipsis';
 import { deleted } from '~/ultils/services/categoriesService';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -15,7 +16,8 @@ function Category({ props, onEventDeleted, onUpdate }) {
         try {
             setIsDeleting(true);
             const response = await deleted(props.id);
-            onEventDeleted(props.id); // Notify parent component of deleted event
+            if (response.statusCode === 204) toast.success(response.message);
+            onEventDeleted(props.id);
         } catch (error) {
             console.log(error);
         } finally {
@@ -24,7 +26,7 @@ function Category({ props, onEventDeleted, onUpdate }) {
     };
 
     const handleDeleteConfirmation = () => {
-        if(!props.isDeleted) {
+        if (!props.isDeleted) {
             if (
                 window.confirm(
                     'Bạn có chắc chắn muốn xóa danh mục này không?\n Mọi sản phẩm hoặc bài viết trong danh mục sẽ bị xóa.',
@@ -32,7 +34,7 @@ function Category({ props, onEventDeleted, onUpdate }) {
             ) {
                 handleDelete();
             }
-        }else {
+        } else {
             handleDelete();
         }
     };
