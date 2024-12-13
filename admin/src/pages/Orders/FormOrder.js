@@ -52,7 +52,8 @@ function FormOrder({ onClose, id }) {
                         setOrderData(refreshedData.data);
                         setProducts(refreshedData.data.orderDetails);
                     } else {
-                        toast.error('Cập nhật thất bại.');
+                        console.log(fetchAPI);
+                        toast.error(fetchAPI.message);
                     }
                 } catch (error) {
                     console.error(error);

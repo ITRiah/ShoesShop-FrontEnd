@@ -8,6 +8,7 @@ export const register = async (req) => {
             password: req.password,
             username: req.username,
             email: req.email,
+            role: 'ADMIN',
         });
         return res.data;
     } catch (error) {
