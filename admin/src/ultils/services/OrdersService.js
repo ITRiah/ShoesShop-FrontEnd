@@ -1,11 +1,12 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
-export const getall = async (fullName, fromDate, toDate, page, perPage) => {
+export const getall = async (fullName, fromDate, toDate, status, page, perPage) => {
     try {
         const res = await httpRequest.post('v1/orders/search', {
             fullName,
             dateFrom: fromDate,
             dateTo: toDate,
+            status: status || null,
             page: page,
             size: perPage || 10000000000,
         });

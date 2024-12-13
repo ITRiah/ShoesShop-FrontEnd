@@ -21,6 +21,7 @@ function Orders() {
     const [fullName, setFullName] = useState('');
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
+    const [status, setStatus] = useState('');
     const [reloadComponent, setReloadComponent] = useState('');
     const [pageValue, setPageValue] = useState(0); // Default to page 0
     const [perPageValue, setPerPageValue] = useState(10); // Set default perPage
@@ -50,7 +51,7 @@ function Orders() {
     // Fetch data when filters or page change
     useEffect(() => {
         const fetchData = async () => {
-            const response = await getall(fullName, fromDate, toDate, pageValue, perPageValue); // Add pagination params
+            const response = await getall(fullName, fromDate, toDate, status, pageValue, perPageValue); // Add pagination params
             if (response.statusCode === 200) {
                 const newData = response.result.map(({ id, fullName, phone, totalAmount, status }) => {
                     const menu = [
@@ -112,7 +113,7 @@ function Orders() {
         };
 
         fetchData();
-    }, [fullName, fromDate, toDate, reloadComponent, pageValue, perPageValue]);
+    }, [fullName, fromDate, toDate, status, reloadComponent, pageValue, perPageValue]);
 
     // Handle page change
     const handlePageChange = ({ selected }) => {
@@ -122,10 +123,12 @@ function Orders() {
     };
 
     // Handle filter change and reset page to 0
-    const handleFilterChange = (fullName, fromDate, toDate) => {
+    const handleFilterChange = (fullName, fromDate, toDate, s) => {
         setFullName(fullName);
         setFromDate(fromDate);
         setToDate(toDate);
+
+        setStatus(s);
         setPageValue(0); // Reset page to 0 when filters change
         navigate(`?page=0&perPage=${perPageValue}`); // Update URL to reflect the reset page
     };

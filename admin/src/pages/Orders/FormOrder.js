@@ -53,7 +53,8 @@ function FormOrder({ onClose, id }) {
                         setProducts(refreshedData.data.orderDetails);
                     } else {
                         console.log(fetchAPI);
-                        toast.error(fetchAPI.message);
+                        if (fetchAPI.message) toast.error(fetchAPI.message);
+                        else toast.error(fetchAPI.data.message);
                     }
                 } catch (error) {
                     console.error(error);
