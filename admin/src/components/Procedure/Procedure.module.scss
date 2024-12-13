@@ -1,28 +1,31 @@
 .wrapper {
-    background-color: rgb(255, 146, 157);
-    box-shadow: 0px 0px 10px rgba(228, 231, 227, 0.5);
+    box-shadow: 0px 0px 2px rgba(23, 24, 23, 0.5);
     border-radius: 5px;
     padding: 7px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    padding-top: 0;
     position: relative;
     overflow: hidden;
-    min-height: 100px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    color: #000;
 }
 
 .img {
+    margin-top: 10px;
     display: flex;
     align-items: center;
     border-radius: 10px;
+    width: 100%;
 }
 .img img {
-    max-width: 150px;
-    max-height: 200px;
-    object-fit: contain;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
     border-radius: 13px;
 }
 .info p {
-    color: #fff;
+    color: #000;
 
     &:nth-child(1) {
         font-size: 2rem;

@@ -77,7 +77,6 @@ function Home() {
                 month: month || 12,
                 year: year2 || 2024,
             });
-            console.log('xxxxxxxaaa', response);
             if (response.statusCode === 200) {
                 setProductSt(response.data);
             } else {
@@ -166,7 +165,6 @@ function Home() {
                     <div>
                         <Table title="Top sản phẩm bán chạy" tableTitle={tableTitle}>
                             {productSt.map((st) => {
-                                console.log(st);
                                 return (
                                     <TopProducts
                                         key={v4()}

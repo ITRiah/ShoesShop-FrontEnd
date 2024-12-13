@@ -1,12 +1,15 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
-export const getall = async (name, fromPrice, toPrice, procedure) => {
+export const getall = async (name, fromPrice, toPrice, procedures, categories, page, perPage) => {
     try {
         const res = await httpRequest.post('v1/products/search', {
             name: name,
             priceBigger: toPrice,
             priceLower: fromPrice,
-            // procedureIds: [procedure]
+            procedureIds: procedures,
+            categoryIds: categories,
+            page: page,
+            size: perPage || 100000000000,
         });
         return res.data;
     } catch (error) {
@@ -52,7 +55,7 @@ export const create = async (req) => {
             status: req.status,
         });
 
-        return res;
+        return res.data;
     } catch (error) {
         console.log(error);
     }

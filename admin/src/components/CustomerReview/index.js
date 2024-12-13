@@ -24,16 +24,12 @@ const CustomerReview = ({ year }) => {
     ]);
 
     useEffect(() => {
-        console.log('Year has changed:', year); // Log the year value to check if it changes
-
         const fetchData = async () => {
             try {
                 const response = await statistic({
                     month: 12,
                     year: year ?? 2024,
                 });
-                console.log('API response:', response); // Log response data
-
                 if (response.statusCode === 200) {
                     let seriesRs = [];
                     let CateRs = [];

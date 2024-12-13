@@ -7,6 +7,12 @@
     transition: all 0.3s ease;
     width: 98%;
 }
+
+.table {
+    display: flex;
+    flex-direction: column;
+}
+
 .listUser {
     display: grid;
     grid-template-columns: 3fr 1fr;
@@ -16,4 +22,8 @@
 }
 .filter {
     padding: 0 10px;
+}
+
+.pagination {
+    width: 100%;
 }

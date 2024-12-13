@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
 import { v4 } from 'uuid';
+import ReactPaginate from 'react-paginate'; // Import ReactPaginate for pagination
+import { useNavigate, useLocation } from 'react-router-dom'; // For handling URL navigation and params
 
 import styles from './Accounts.module.scss';
 import WhiteBG from '~/Layouts/DefaultLayout/WhiteBG';
@@ -13,23 +15,37 @@ import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
-//let rows;
-
 function Accounts() {
     const [rows, setRows] = useState([]);
     const [updating, setUpdating] = useState('');
     const [name, setName] = useState('');
-    const [status, setStatus] = useState('');
     const [role, setRole] = useState('');
     const [idShow, setIdShow] = useState('');
+    const [pageValue, setPageValue] = useState(0); // Track current page
+    const [perPageValue, setPerPageValue] = useState(10); // Items per page
+    const [totalPages, setTotalPages] = useState(1); // Total number of pages
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Function to get query params from the URL
+    const getQueryParams = () => {
+        const params = new URLSearchParams(location.search);
+        const page = parseInt(params.get('page')) || 0;
+        const perPage = parseInt(params.get('perPage')) || 10;
+        return { page, perPage };
+    };
+
+    useEffect(() => {
+        const { page, perPage } = getQueryParams(); // Get page and perPage from URL
+        setPageValue(page);
+        setPerPageValue(perPage);
+    }, [location.search]); // This effect runs whenever the URL changes
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await getall(name, role);
-
-                console.log(response);
-
+                const response = await getall(name, role, pageValue, perPageValue); // Include pagination params
                 if (response.statusCode !== 200) {
                     setRows([]);
                 } else {
@@ -69,45 +85,31 @@ function Accounts() {
                         };
                     });
                     setRows(newData);
+                    setTotalPages(response.totalPage); // Update totalPages from API response
                 }
             } catch (error) {
-                // Xử lý lỗi khi gọi API
                 console.log(error);
             }
         };
         fetchData();
-    }, [updating, name, role]);
+    }, [updating, name, role, pageValue, perPageValue]);
 
     const col = [
-        {
-            field: 'ID',
-            width: 50,
-        },
-        {
-            field: 'User Name',
-            width: 140,
-        },
-        {
-            field: 'First Name',
-            width: 135,
-        },
-        {
-            field: 'Last Name',
-            width: 135,
-        },
-        {
-            field: 'Email',
-            width: 200,
-        },
-        {
-            field: 'Trạng thái',
-            width: 100,
-        },
-        {
-            field: 'Action',
-            width: 70,
-        },
+        { field: 'ID', width: 50 },
+        { field: 'User Name', width: 140 },
+        { field: 'First Name', width: 135 },
+        { field: 'Last Name', width: 135 },
+        { field: 'Email', width: 200 },
+        { field: 'Trạng thái', width: 100 },
+        { field: 'Action', width: 70 },
     ];
+
+    const handlePageChange = ({ selected }) => {
+        const newPageValue = selected;
+        setPageValue(newPageValue);
+        // Update the URL with the new page and perPage values
+        navigate(`?page=${newPageValue}&perPage=${perPageValue}`);
+    };
 
     return (
         <div>
@@ -124,12 +126,30 @@ function Accounts() {
                     <div className={cx('listUser')}>
                         <div className={cx('table')}>
                             <Table2 rows={rows} colum={col} />
+                            <div className={cx('pagination')}>
+                                <ReactPaginate
+                                    previousLabel={'<'}
+                                    nextLabel={'>'}
+                                    breakLabel={'...'}
+                                    forcePage={pageValue} // Force page to reflect the current state
+                                    pageCount={totalPages} // Total pages from API response
+                                    onPageChange={handlePageChange} // Update page when a new page is selected
+                                    containerClassName={cx('pagination-container')}
+                                    pageClassName={cx('pagination-page')}
+                                    activeClassName={cx('active')}
+                                    previousClassName={cx('pagination-previous')}
+                                    nextClassName={cx('pagination-next')}
+                                />
+                            </div>
                         </div>
                         <div className={cx('filter')}>
                             <FormFilter
                                 search={(n, s) => {
                                     setName(n);
                                     setRole(s);
+                                    setPageValue(0); // Reset to page 0 when filters change
+                                    // Update the URL with filters and page 0
+                                    navigate(`?page=0&perPage=${perPageValue}`);
                                 }}
                             />
                         </div>

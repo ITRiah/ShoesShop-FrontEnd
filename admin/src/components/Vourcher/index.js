@@ -62,13 +62,20 @@ function Vourcher({ props, onEventDeleted, onUpdate }) {
     };
 
     return (
-        <div style={{ background: `url(${bg})` }} className={cx('wrapper')}>
+        <div className={cx('wrapper')}>
             <Ellipsis menu={menu} />
+            {props.img ? (
+                <div className={cx('img')}>
+                    <img src={props.img} alt={props.name} />
+                </div>
+            ) : (
+                <div className={cx('img')}>
+                    <img src={props.img} alt={props.name} />
+                </div>
+            )}
             <div className={cx('info')}>
-                <p>Mã: {props.code}</p>
-                <p>Giá trị: {props.value}%</p>
+                <p>{props.code}</p>
                 <p>Số lượng: {props.quantity}</p>
-                <p>Tối đa: {formatCurrency(props.maxMoney)}</p>
                 <p>Hạn: {formatDate(props.expiredTime)}</p>
             </div>
         </div>

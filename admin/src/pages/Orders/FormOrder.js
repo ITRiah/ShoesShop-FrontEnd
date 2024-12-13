@@ -46,7 +46,6 @@ function FormOrder({ onClose, id }) {
             const updateData = async () => {
                 try {
                     const fetchAPI = await update(data);
-                    console.log(fetchAPI);
                     if (fetchAPI.statusCode === 201) {
                         toast.success('Cập nhật trạng thái thành công!');
                         const refreshedData = await getbyid(id); // Reload data

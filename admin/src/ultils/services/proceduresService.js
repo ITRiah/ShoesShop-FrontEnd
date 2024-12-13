@@ -1,9 +1,11 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
-export const getall = async (s, n) => {
+export const getall = async (s, n, page, perPage) => {
     try {
         const res = await httpRequest.post('v1/procedures/search', {
             name: n,
+            page: page,
+            size: perPage || 1000000000,
         });
         return res.data;
     } catch (error) {

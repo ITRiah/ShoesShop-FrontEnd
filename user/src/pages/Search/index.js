@@ -7,14 +7,19 @@ import { getall as getAllCate } from '~/ultils/services/categoriesService';
 import { getall as getAllProcedure } from '~/ultils/services/proceduresService';
 import Button from '~/components/Button';
 import ProductItem from '~/components/ProductItem';
+import ReactPaginate from 'react-paginate';
 import { v4 } from 'uuid';
 import useDebounce from '~/hooks/useDebounce';
 import styles from './Search.module.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
 function Search() {
     const [searchValue, setSearchValue] = useState('');
+    const [pageValue, setPageValue] = useState(0);
+    const [perPageValue, setPerPageValue] = useState(12);
     const [data, setData] = useState([]);
     const [sort, setSort] = useState(1);
     const [cates, setCates] = useState([]);
@@ -23,43 +28,43 @@ function Search() {
     const [procedureIdCheckedList, setProcedureIdCheckedList] = useState([]);
     const [limit, setLimit] = useState([0, 0]);
     const [showAllCategories, setShowAllCategories] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
 
     const location = useLocation();
     const navigate = useNavigate();
 
     const queryParams = new URLSearchParams(location.search);
     const s = queryParams.get('s');
+    const page = parseInt(queryParams.get('page'), 0) || 0;
+    const perPage = parseInt(queryParams.get('perPage'), 12) || 12;
+
     const debouncedSearchValue = useDebounce(searchValue, 500);
 
     useEffect(() => {
-        const initialSearchValue = s ? s : '';
-        setSearchValue(initialSearchValue);
+        setSearchValue(s || '');
+        setPageValue(page);
+        setPerPageValue(perPage);
 
         const fetchData = async () => {
             const response = await getall(
                 debouncedSearchValue,
-                limit[1] > 0 ? limit : '',
+                limit[1] > 0 ? limit[1] : '',
                 limit[0],
                 cateIdCheckedList,
-                procedureIdCheckedList, // Thêm thủ tục vào API
+                procedureIdCheckedList,
+                page,
+                perPage,
             );
             if (response.statusCode === 200) {
                 setData(response.result);
+                setTotalPages(response.totalPage);
             } else {
                 setData([]);
             }
         };
 
-        if (debouncedSearchValue || s || searchValue === '') {
-            fetchData();
-        }
-    }, [debouncedSearchValue, s, sort, limit, cateIdCheckedList, procedureIdCheckedList]);
-
-    const handleSearchChange = (e) => {
-        const newSearchValue = e.target.value;
-        setSearchValue(newSearchValue);
-        navigate(`?s=${newSearchValue}`);
-    };
+        fetchData();
+    }, [debouncedSearchValue, limit, cateIdCheckedList, procedureIdCheckedList, page, perPage]);
 
     useEffect(() => {
         const fetchDataCate = async () => {
@@ -84,26 +89,34 @@ function Search() {
         fetchDataProcedure();
     }, []);
 
+    const handleSearchChange = (e) => {
+        const newSearchValue = e.target.value;
+        setSearchValue(newSearchValue);
+        setPageValue(0);
+        navigate(`?s=${newSearchValue}&page=0&perPage=${perPageValue}`);
+    };
+
     const handleCategoryChange = (e) => {
         const categoryId = e.target.value;
-        setCateIdCheckedList((prevList) => {
-            if (e.target.checked) {
-                return prevList.includes(categoryId) ? prevList : [...prevList, categoryId];
-            } else {
-                return prevList.filter((id) => id !== categoryId);
-            }
-        });
+        setCateIdCheckedList((prevList) =>
+            e.target.checked ? [...prevList, categoryId] : prevList.filter((id) => id !== categoryId),
+        );
+        setPageValue(0);
+        navigate(`?s=${searchValue}&page=0&perPage=${perPageValue}`);
+    };
+
+    const handlePageChange = ({ selected }) => {
+        setPageValue(selected);
+        navigate(`?s=${searchValue}&page=${selected}&perPage=${perPageValue}`);
     };
 
     const handleProcedureChange = (e) => {
         const procedureId = e.target.value;
-        setProcedureIdCheckedList((prevList) => {
-            if (e.target.checked) {
-                return prevList.includes(procedureId) ? prevList : [...prevList, procedureId];
-            } else {
-                return prevList.filter((id) => id !== procedureId);
-            }
-        });
+        setProcedureIdCheckedList((prevList) =>
+            e.target.checked ? [...prevList, procedureId] : prevList.filter((id) => id !== procedureId),
+        );
+        setPageValue(0);
+        navigate(`?s=${searchValue}&page=0&perPage=${perPageValue}`);
     };
 
     const handleClearFilters = () => {
@@ -113,17 +126,6 @@ function Search() {
         setProcedureIdCheckedList([]);
         setSearchValue('');
         navigate('?');
-
-        // Gọi lại fetchData sau khi reset state
-        const fetchData = async () => {
-            const response = await getall('', '', '', [], []);
-            if (response.statusCode === 200) {
-                setData(response.result);
-            } else {
-                setData([]);
-            }
-        };
-        fetchData();
     };
 
     const handleShowMoreCategories = () => {
@@ -141,25 +143,21 @@ function Search() {
                         <div className={cx('filter_item')}>
                             <p>Giá từ:</p>
                             <input
-                                onChange={(e) => {
-                                    setLimit([e.target.value, limit[1]]);
-                                }}
-                                value={limit[0]}
+                                type="number"
                                 min="0"
                                 step="100000"
-                                type="number"
+                                value={limit[0]}
+                                onChange={(e) => setLimit([e.target.value, limit[1]])}
                             />
                         </div>
                         <div className={cx('filter_item')}>
                             <p>đến:</p>
                             <input
-                                onChange={(e) => {
-                                    setLimit([limit[0], e.target.value]);
-                                }}
-                                value={limit[1]}
-                                step="100000"
-                                min="0"
                                 type="number"
+                                min="0"
+                                step="100000"
+                                value={limit[1]}
+                                onChange={(e) => setLimit([limit[0], e.target.value])}
                             />
                         </div>
                         <div className={cx('filter_checkbox')}>
@@ -205,23 +203,40 @@ function Search() {
                             )}
                         </div>
                     </div>
-                    <div>
-                        <Button onClick={handleClearFilters}>Xóa Filter</Button>
-                    </div>
+                    <Button onClick={handleClearFilters}>Xóa Filter</Button>
                 </div>
             </div>
-            {data.length > 0 ? (
-                <>
-                    <div className={cx('result')}>
-                        {data.map((item) => (
-                            <ProductItem key={v4()} props={item} />
-                        ))}
-                    </div>
-                    <div className={cx('pagination')}></div>
-                </>
-            ) : (
-                <div className={cx('showEmty')}>Không có sản phẩm nào phù hợp</div>
-            )}
+            <div className={cx('result-content')}>
+                {data.length > 0 ? (
+                    <>
+                        <div className={cx('result')}>
+                            {data.map((item) => (
+                                <ProductItem key={v4()} props={item} />
+                            ))}
+                        </div>
+                        <div className={cx('pagination')}>
+                            <ReactPaginate
+                                previousLabel={<FontAwesomeIcon icon={faArrowLeft} />}
+                                nextLabel={<FontAwesomeIcon icon={faArrowRight} />}
+                                breakLabel={'...'}
+                                forcePage={pageValue} // Synchronize current page
+                                pageCount={totalPages}
+                                marginPagesDisplayed={2}
+                                pageRangeDisplayed={5}
+                                onPageChange={handlePageChange}
+                                containerClassName="pagination-container"
+                                pageClassName="pagination-page"
+                                activeClassName="active"
+                                disabledClassName="pagination-disabled"
+                                previousClassName="pagination-previous"
+                                nextClassName="pagination-next"
+                            />
+                        </div>
+                    </>
+                ) : (
+                    <div className={cx('showEmpty')}>Không có sản phẩm nào phù hợp</div>
+                )}
+            </div>
         </div>
     );
 }

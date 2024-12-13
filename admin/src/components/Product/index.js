@@ -20,8 +20,6 @@ function Product({ props, onEventDeleted, onUpdate, onCreateDetail, onShowDetail
             onEventDeleted(props.id);
         } catch (error) {
             console.log(error);
-        } finally {
-            console.log('Deleted');
         }
     };
 

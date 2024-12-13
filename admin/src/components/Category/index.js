@@ -50,18 +50,20 @@ function Category({ props, onEventDeleted, onUpdate }) {
     ];
 
     return (
-        <div style={{ background: `url(${bg})` }} className={cx('wrapper')}>
+        <div className={cx('wrapper')}>
             <Ellipsis menu={menu} />
-            {props.avatar ? (
+            {props.img ? (
                 <div className={cx('img')}>
-                    <img src={props.avatar} alt={props.name} />
+                    <img src={props.img} alt={props.name} />
                 </div>
             ) : (
-                ''
+                <div className={cx('img')}>
+                    <img src={props.img} alt={props.name} />
+                </div>
             )}
             <div className={cx('info')}>
                 <p>{props.name}</p>
-                <p>Tạo bởi: {props.admin_id}</p>
+                <p>Tạo bởi: {props.createdBy}</p>
                 <p>
                     Trạng Thái:
                     {props.isDeleted ? (

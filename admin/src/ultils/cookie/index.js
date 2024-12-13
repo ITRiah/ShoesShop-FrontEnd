@@ -8,7 +8,6 @@ export const setCookie = (name, value) => {
 };
 
 export const getCookie = (name) => {
-    //console.log(decodeURI(document.cookie));
     const cookie = document.cookie.split(';').find((c) => c.trim().startsWith(`${name}=`));
     if (cookie) {
         const encodedCookie = cookie.split('=')[1];
@@ -35,5 +34,4 @@ export const deleteCookie = (name) => {
 
     const cookie = `${name}=;expires=${expireDate.toUTCString()};path=/`;
     document.cookie = cookie; // thiết lập cookie
-    console.log('logout', document.cookie);
 };

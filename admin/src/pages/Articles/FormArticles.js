@@ -77,7 +77,6 @@ function FormArticles({ onClose, title, onSuccess, id }) {
             const updateData = async () => {
                 try {
                     const fetchAPI = await update(data);
-                    console.log(fetchAPI.data);
                     onSuccess(fetchAPI.data.status);
                 } catch (e) {
                     console.log(e);

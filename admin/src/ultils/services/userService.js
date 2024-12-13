@@ -1,10 +1,12 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
-export const getall = async (n, s) => {
+export const getall = async (n, s, page, perPage) => {
     try {
         const res = await httpRequest.post('v1/users/search', {
             email: n,
             role: s ? s : 'ADMIN',
+            page: page,
+            size: perPage || 10000000000,
         });
         return res.data;
     } catch (error) {
@@ -33,8 +35,7 @@ export const topprice = async () => {
 export const getbyid = async (id) => {
     //console.log(req);
     try {
-        const res = await httpRequest.get('v1/users/' +id, {
-        });
+        const res = await httpRequest.get('v1/users/' + id, {});
         return res;
     } catch (error) {
         console.log(error);
@@ -54,8 +55,8 @@ export const block = async (req) => {
     try {
         const res = await httpRequest.update('v1/users/block?id=' + req.id, {
             params: {
-                id: req.id
-            }
+                id: req.id,
+            },
         });
         return res.data;
     } catch (e) {

@@ -1,10 +1,12 @@
 import * as httpRequest from '~/ultils/httpRequest';
 
-export const getall = async (fromDate, toDate) => {
+export const getall = async (fromDate, toDate, page, perPage) => {
     try {
         const res = await httpRequest.post('v1/vouchers/search', {
             dateFrom: fromDate,
             dateTo: toDate,
+            page: page,
+            size: perPage || 10000000000,
             role: 'ADMIN',
         });
         return res.data;
@@ -29,7 +31,6 @@ export const deleted = async (id) => {
                 id: id,
             },
         });
-        console.log(res.data);
         return res.data;
     } catch (error) {
         console.log(error);

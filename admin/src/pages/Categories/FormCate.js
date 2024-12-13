@@ -60,7 +60,6 @@ function FormCate({ onClose, onSuccess, title, id }) {
                     throw new Error('Unexpected response format');
                 }
                 setImage(data.data); // Assuming `data.data` contains the image URL
-                console.log('Upload successful:', data);
             })
             .catch((error) => {
                 console.error('Error uploading image:', error.message);
