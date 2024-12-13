@@ -60,6 +60,38 @@ function Orders() {
                                 setIdShow(id);
                             },
                         },
+                        {
+                            title: 'Xuất hóa đơn',
+                            onClick: async () => {
+                                try {
+                                    // Assuming the URL for downloading the file is correct
+                                    const fileUrl = `http://localhost:8080/api/v1/orders/${id}/download`;
+
+                                    // Make an HTTP request to get the file data
+                                    const response = await fetch(fileUrl);
+                                    if (!response.ok) {
+                                        throw new Error(`Failed to fetch file: ${response.statusText}`);
+                                    }
+
+                                    // Get the file blob from the response
+                                    const fileBlob = await response.blob();
+
+                                    // Create a temporary anchor element to trigger the file download
+                                    const link = document.createElement('a');
+                                    link.href = URL.createObjectURL(fileBlob); // Create a URL for the blob
+                                    link.download = 'Hóa đơn.pdf'; // Set the file name
+
+                                    // Trigger the download by simulating a click event
+                                    document.body.appendChild(link); // Ensure the link is added to the DOM
+                                    link.click();
+
+                                    // Clean up by removing the link after the download trigger
+                                    document.body.removeChild(link);
+                                } catch (error) {
+                                    console.error('Error downloading the file:', error);
+                                }
+                            },
+                        },
                     ];
 
                     const formatPrice = new Intl.NumberFormat('vi-VN').format(totalAmount);

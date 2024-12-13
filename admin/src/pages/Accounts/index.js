@@ -97,11 +97,11 @@ function Accounts() {
     const col = [
         { field: 'ID', width: 50 },
         { field: 'User Name', width: 140 },
-        { field: 'First Name', width: 135 },
-        { field: 'Last Name', width: 135 },
+        { field: 'Họ', width: 135 },
+        { field: 'Tên', width: 135 },
         { field: 'Email', width: 200 },
         { field: 'Trạng thái', width: 100 },
-        { field: 'Action', width: 70 },
+        { field: 'Hành động', width: 70 },
     ];
 
     const handlePageChange = ({ selected }) => {

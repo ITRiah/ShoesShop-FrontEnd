@@ -63,8 +63,11 @@ function Product({ props, onEventDeleted, onUpdate, onCreateDetail, onShowDetail
                 <p>Giá: {formatPrice}đ</p>
                 <div className={cx('info-more')}>
                     <div className={cx('left-info')}>
-                        <p>
-                            Màu sắc: <span className={cx('color')} style={{ background: `${props.color}` }}></span>
+                        <p className={cx('color-list')}>
+                            <span>Màu sắc:</span>
+                            {props.productDetailResponseList.map((value) => (
+                                <span className={cx('color')} style={{ background: `${value.color}` }}></span>
+                            ))}
                         </p>
                     </div>
                     <div className={cx('right-info')}>

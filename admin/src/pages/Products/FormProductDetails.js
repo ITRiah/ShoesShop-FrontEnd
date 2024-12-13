@@ -9,11 +9,22 @@ import styles from './Products.module.scss';
 import { getbyid, deletedDetail } from '~/ultils/services/productService';
 import Ellipsis from '~/components/Ellipsis';
 
+import { colorPalette } from '~/config/colorPalette';
+
 const cx = classNames.bind(styles);
 
 function FormProductDetails({ onClose, title, onEventDeleted, onSuccess, id, detailId, onChangeDetailId }) {
     const [details, setDetails] = useState([]);
     const [titlex, setTitlex] = useState('');
+
+    function getColorNameFromRGB(rgb) {
+        for (const key in colorPalette) {
+            if (colorPalette[key].rgb === rgb) {
+                return colorPalette[key].name;
+            }
+        }
+        return 'Không xác định'; // Nếu không tìm thấy màu, trả về 'Không xác định'
+    }
 
     useEffect(() => {
         const fetchCate = async () => {
@@ -60,7 +71,7 @@ function FormProductDetails({ onClose, title, onEventDeleted, onSuccess, id, det
     }, [id]);
 
     return (
-        <Modal show={true} onHide={onClose} className='model_pd_detail'> 
+        <Modal show={true} onHide={onClose} className="model_pd_detail">
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
@@ -86,7 +97,7 @@ function FormProductDetails({ onClose, title, onEventDeleted, onSuccess, id, det
                             {details.map((detail) => (
                                 <tr key={v4()}>
                                     <td>{detail.size}</td>
-                                    <td>{detail.color}</td>
+                                    <td>{getColorNameFromRGB(detail.color)}</td>
                                     <td>{detail.quantity}</td>
                                     <td>{detail.price}</td>
                                     <td>{detail.isDeleted ? 'Đã xóa' : 'Đang bán'}</td>
@@ -97,12 +108,12 @@ function FormProductDetails({ onClose, title, onEventDeleted, onSuccess, id, det
                                                 {
                                                     title: 'Sửa',
                                                     onClick: () => {
-                                                        onChangeDetailId(detail.id)
+                                                        onChangeDetailId(detail.id);
                                                     },
                                                 },
                                                 {
                                                     title: 'Xóa',
-                                                    onClick: () => handleDelete(detail.id), 
+                                                    onClick: () => handleDelete(detail.id),
                                                 },
                                             ]}
                                         />

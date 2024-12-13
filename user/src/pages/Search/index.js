@@ -19,7 +19,7 @@ const cx = classNames.bind(styles);
 function Search() {
     const [searchValue, setSearchValue] = useState('');
     const [pageValue, setPageValue] = useState(0);
-    const [perPageValue, setPerPageValue] = useState(12);
+    const [perPageValue, setPerPageValue] = useState(9);
     const [data, setData] = useState([]);
     const [sort, setSort] = useState(1);
     const [cates, setCates] = useState([]);
@@ -36,7 +36,7 @@ function Search() {
     const queryParams = new URLSearchParams(location.search);
     const s = queryParams.get('s');
     const page = parseInt(queryParams.get('page'), 0) || 0;
-    const perPage = parseInt(queryParams.get('perPage'), 12) || 12;
+    const perPage = parseInt(queryParams.get('perPage'), 9) || 9;
 
     const debouncedSearchValue = useDebounce(searchValue, 500);
 

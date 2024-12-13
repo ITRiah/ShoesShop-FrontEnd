@@ -8,7 +8,7 @@ const routes = {
     articles: '/articles',
     articlesList: '/articles/:id',
     articleDetail: '/article-detail/:id',
-    orders: '/orders/:id',
+    orders: '/orders',
     profile: '/profile',
     cart: '/cart',
     login: '/login',

@@ -12,16 +12,8 @@ import { v4 } from 'uuid';
 
 const cx = classNames.bind(styles);
 
-function CartItem({ item, onUpdateTotal }) {
+function CartItem({ item, onUpdateTotal, checked, onCheckboxChange }) {
     const [quantity, setQuantity] = useState(item.quantity);
-
-    useEffect(() => {
-        // const fetchData = async () => {
-        //     const response = await getbyid(item.product.id);
-        //     setProduct(response.data[0]);
-        // };
-        // fetchData();
-    }, [item]);
 
     const formatPrice = useMemo(
         () => new Intl.NumberFormat('vi-VN').format(item.productDetail.price),
@@ -40,6 +32,7 @@ function CartItem({ item, onUpdateTotal }) {
     }, []);
 
     const handleRemoveFromCart = useCallback(() => {
+        onCheckboxChange();
         const fetchData = async () => {
             await deleteCart([item.id]);
             onUpdateTotal();
@@ -49,6 +42,9 @@ function CartItem({ item, onUpdateTotal }) {
 
     return (
         <tr>
+            <td className={cx('checked')}>
+                <input type="checkbox" checked={checked} onChange={onCheckboxChange} />
+            </td>
             <td>
                 <img src={item.productDetail.img} alt="n" />
             </td>

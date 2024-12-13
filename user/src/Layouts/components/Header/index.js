@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames/bind';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import Logo from '~/Layouts/components/Logo';
 import Menu from '~/components/Menu';
@@ -13,7 +13,7 @@ import { isLogin } from '~/ultils/cookie/checkLogin';
 import Search from '~/components/SearchFormV2';
 import { getall } from '~/ultils/services/categoriesService';
 import { deleteCookie } from '~/ultils/cookie';
-import { getCart } from '~/ultils/session';
+import { getCart, updateCart, deleteCart } from '~/ultils/services/cartService';
 import routes from '~/config/routes';
 import styles from './Header.module.scss';
 import SearchList from '~/components/SearchForm/SearchList';
@@ -25,10 +25,13 @@ function Header() {
     const [search, setSearch] = useState('');
     const [showMenu, setShowMenu] = useState(false);
     const [cate, setCate] = useState([]);
+    const [cartQuantity, setCartQuantity] = useState(0);
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const menuItems = useMemo(() => {
+        console.log(isLogin());
         return isLogin()
             ? [
                   {
@@ -62,6 +65,20 @@ function Header() {
                   },
               ];
     }, []);
+
+    useEffect(() => {
+        if (isLogin()) {
+            const fetchData = async () => {
+                const response = await getCart(1);
+
+                if (response.statusCode === 200) {
+                    setCartQuantity(response.data.cartDetails.length);
+                }
+            };
+
+            fetchData();
+        }
+    }, [location]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -113,7 +130,7 @@ function Header() {
                     <FontAwesomeIcon icon={faMagnifyingGlass} />
                 </div>
                 <div className={cx('cart')}>
-                    {getCart().length > 0 && <div className={cx('quantity')}>{getCart().length}</div>}
+                    {cartQuantity > 0 && <div className={cx('quantity')}>{cartQuantity}</div>}
                     <Link to={routes.cart}>
                         <FontAwesomeIcon icon={faBagShopping} />
                     </Link>

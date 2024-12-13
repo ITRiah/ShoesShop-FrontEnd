@@ -26,7 +26,7 @@ function Orders() {
             }
         };
         fetchData();
-    }, []);
+    }, [showModal]);
 
     useEffect(() => {
         setProducts(active.orderDetails || []);
@@ -46,6 +46,7 @@ function Orders() {
             if (response.statusCode === 204) {
                 setOrders((prevOrders) => prevOrders.filter((order) => order.id !== active.id));
                 toast.success('Hủy đơn hàng thành công!');
+                setActive({ ...active, status: 'CANCELLED' });
             } else {
                 toast.error('Hủy đơn hàng không thành công!');
             }
@@ -140,7 +141,14 @@ function Orders() {
                         </div>
                         <div className={cx('action')}>
                             {active.paymentMethod === 'CASH' && active.status === 'PENDING' ? (
-                                <Button className={cx('btn-delete')} primary small onClick={() => setShowModal(true)}>
+                                <Button
+                                    className={cx('btn-delete')}
+                                    primary
+                                    small
+                                    onClick={() => {
+                                        setShowModal(true);
+                                    }}
+                                >
                                     Hủy đơn
                                 </Button>
                             ) : null}

@@ -6,6 +6,9 @@ import { v4 } from 'uuid';
 import styles from './Products.module.scss';
 import { getbyid, createdetail, updatedetail, getdetailbyid } from '~/ultils/services/productService';
 import { toast } from 'react-toastify';
+
+import { colorPalette } from '~/config/colorPalette';
+
 const cx = classNames.bind(styles);
 
 function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' }) {
@@ -51,8 +54,8 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
         }
     }, [id, idDetail]);
 
-    function handleColorChange(event) {
-        setColor(event.target.value);
+    function handleColorChange(colorValue) {
+        setColor(colorValue);
     }
 
     function handleSizeChange(event) {
@@ -174,7 +177,32 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
                     </Form.Group>
                     <Form.Group controlId="category">
                         <Form.Label>Màu sắc</Form.Label>
-                        <Form.Control type="color" value={color} onChange={handleColorChange} />
+                        <div
+                            className="color-palette"
+                            style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '0px' }}
+                        >
+                            {Object.keys(colorPalette).map((key) => (
+                                <div
+                                    title={colorPalette[key].name}
+                                    key={key}
+                                    className="color-box"
+                                    style={{
+                                        backgroundColor: colorPalette[key].rgb,
+                                        width: '40px',
+                                        height: '40px',
+                                        margin: '5px',
+                                        cursor: 'pointer',
+                                        border: `2px solid ${
+                                            color === colorPalette[key].rgb ? '#000' : 'rgba(0, 0, 0, 0.2)'
+                                        }`,
+                                        borderRadius: '5000px',
+                                        boxShadow:
+                                            color === colorPalette[key].rgb ? '0 0 5px rgba(0, 0, 0, 0.9)' : 'none',
+                                    }}
+                                    onClick={() => handleColorChange(colorPalette[key].rgb)}
+                                ></div>
+                            ))}
+                        </div>
                     </Form.Group>
                     <Form.Group controlId="procedure">
                         <Form.Label>Size</Form.Label>
@@ -187,7 +215,7 @@ function FormCreateProductDetail({ onClose, title, onSuccess, id, idDetail = '' 
                             ))}
                         </Form.Control>
                     </Form.Group>
-                    <Form.Group controlId="price">
+                    <Form.Group controlId="quantity">
                         <Form.Label>Số lượng</Form.Label>
                         <Form.Control type="number" value={quantity} onChange={handleQuantityChange} />
                     </Form.Group>

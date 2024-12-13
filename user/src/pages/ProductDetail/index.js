@@ -12,6 +12,7 @@ import { getbyid } from '~/ultils/services/productService';
 import { updateCart } from '~/ultils/services/cartService';
 import routes from '~/config/routes';
 import { isLogin } from '~/ultils/cookie/checkLogin';
+import { Image } from 'react-bootstrap';
 
 const cx = classNames.bind(styles);
 
@@ -54,6 +55,10 @@ function ProductDetail() {
     const addtoCart = async () => {
         if (isLogin()) {
             if (selectedSize && selectedColor) {
+                if (selectedProductDetail.quantity <= 0) {
+                    toast.info('Sản phẩm này tạm hết! Vui lòng chọn sản phẩm khác.');
+                    return;
+                }
                 const data = {
                     productDetailId: selectedProductDetail.id,
                     quantity: 1,
@@ -63,6 +68,7 @@ function ProductDetail() {
                     if (response.statusCode === 201) {
                         // alert('Sản phẩm đã được thêm vào giỏ hàng');
                         toast.success('Sản phẩm đã được thêm vào giỏ hàng!');
+                        navigate(`?a=${selectedProductDetail.id}`);
                         return true; // Thành công
                     } else {
                         toast.error('Không thể thêm sản phẩm vào giỏ hàng');
@@ -159,31 +165,35 @@ function ProductDetail() {
                                         );
 
                                         return (
-                                            <span
-                                                key={item.color}
-                                                onClick={() => {
-                                                    if (isAvailable) {
-                                                        setSelectedColor(item.color);
-                                                        setSelectedImage(item.img);
-                                                        setSelectedPrice(item.price);
-                                                        setSelectedProductDetail(item);
-                                                    }
-                                                }}
-                                                style={{
-                                                    display: 'inline-block',
-                                                    width: '30px',
-                                                    height: '30px',
-                                                    borderRadius: '50%',
-                                                    backgroundColor: item.color,
-                                                    marginRight: '10px',
-                                                    cursor: isAvailable ? 'pointer' : 'not-allowed',
-                                                    border:
-                                                        selectedColor === item.color
-                                                            ? '3px solid #333'
-                                                            : '1px solid #000',
-                                                    opacity: isAvailable ? 1 : 0.3,
-                                                }}
-                                            ></span>
+                                            <>
+                                                {isAvailable ? (
+                                                    <span
+                                                        key={item.color}
+                                                        onClick={() => {
+                                                            if (isAvailable) {
+                                                                setSelectedColor(item.color);
+                                                                setSelectedImage(item.img);
+                                                                setSelectedPrice(item.price);
+                                                                setSelectedProductDetail(item);
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            display: 'inline-block',
+                                                            width: '30px',
+                                                            height: '30px',
+                                                            borderRadius: '50%',
+                                                            backgroundColor: item.color,
+                                                            marginRight: '10px',
+                                                            cursor: isAvailable ? 'pointer' : 'not-allowed',
+                                                            border:
+                                                                selectedColor === item.color
+                                                                    ? '3px solid #333'
+                                                                    : '1px solid #000',
+                                                            opacity: isAvailable ? 1 : 0.3,
+                                                        }}
+                                                    ></span>
+                                                ) : null}
+                                            </>
                                         );
                                     })}
                             </div>
@@ -231,7 +241,7 @@ function ProductDetail() {
                 </div>
                 {active ? (
                     <div className={cx('describe')}>
-                        <div className={cx('text')}>{product.summary}</div>
+                        <div className={cx('text')} dangerouslySetInnerHTML={{ __html: product.description }} />
                         <div className={cx('btn')}>
                             <Button onClick={() => setShowMore(!showMore)} text>
                                 {showMore ? 'Thu gọn' : 'Xem Thêm'}
@@ -239,7 +249,12 @@ function ProductDetail() {
                         </div>
                     </div>
                 ) : (
-                    <div className={cx('parameter')}></div>
+                    <div className={cx('parameter')}>
+                        <h2>{product.procedure.name}</h2>
+                        <div>
+                            <Image src={product.procedure.img} />
+                        </div>
+                    </div>
                 )}
             </div>
         </div>

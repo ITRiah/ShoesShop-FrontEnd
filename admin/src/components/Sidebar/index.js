@@ -14,10 +14,10 @@ function Sidebar() {
     return (
         <aside className={cx('wrapper')}>
             <div className={cx('logo')}>
-                <span>
+                <a href="/">
                     Shoes
                     <span>Shop</span>
-                </span>
+                </a>
             </div>
             <div className={cx('menu')}>
                 <Menu />

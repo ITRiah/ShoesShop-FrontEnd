@@ -37,21 +37,21 @@ const tableTitle = (
                 width: '100px',
             }}
         >
-            Mã SP
+            Mã
         </p>
         <p
             style={{
                 flex: 1,
             }}
         >
-            Tên SP
+            Tên Sản phẩm
         </p>
         <p
             style={{
                 width: '140px',
             }}
         >
-            SL bán
+            Số lượng bán
         </p>
     </div>
 );

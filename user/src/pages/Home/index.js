@@ -5,6 +5,7 @@ import ProductsIntro from '~/components/ProductsIntro';
 
 import { getall } from '~/ultils/services/categoriesService';
 import { useEffect, useState } from 'react';
+import Slider from '~/Layouts/components/Slider';
 import { v4 } from 'uuid';
 
 const cx = classNames.bind(styles);
@@ -26,6 +27,9 @@ function Home() {
 
     return (
         <div className={cx('wrapper')}>
+            <div className={cx('slider')}>
+                <Slider />
+            </div>
             {cate.map((item) => {
                 return <ProductsIntro key={v4()} title={item.name} id={item.id} />;
             })}

@@ -56,7 +56,7 @@ function Procedure({ props, onEventDeleted, onUpdate }) {
                 </div>
             ) : (
                 <div className={cx('img')}>
-                    <img src={props.avatar} alt={props.name} />
+                    <img src={props.img} alt={props.name} />
                 </div>
             )}
             <div className={cx('info')}>

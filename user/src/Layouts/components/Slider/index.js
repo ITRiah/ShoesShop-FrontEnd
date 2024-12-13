@@ -1,42 +1,57 @@
-import classNames from 'classnames/bind';
-import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper';
-
+import React from 'react';
+// Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 
+// Import Swiper styles
 import 'swiper/css';
-import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import 'swiper/css/scrollbar';
-import 'swiper/swiper-bundle.css';
-import 'swiper/css/autoplay';
+import 'swiper/css/navigation';
+import 'swiper/css/autoplay'; // Import the autoplay CSS
 
-import styles from './Slider.module.scss';
-import { v4 } from 'uuid';
+// Import required modules directly from 'swiper'
+import { Pagination, Navigation, Autoplay } from 'swiper';
 
-const cx = classNames.bind(styles);
+// Custom slider data with images and titles
+const sliders = [
+    {
+        img: 'https://www.bloommaterials.com/wp-content/uploads/2020/03/BLOOM-BRAND-copy_Adidas.png',
+        title: 'Adidas',
+    },
+    {
+        img: 'https://i.pinimg.com/564x/fa/45/96/fa4596ad9a9d39901eeb455ed4f74e44.jpg',
+        title: 'Nike',
+    },
+];
 
-function Slider({ className, props }) {
+export default function Slider() {
     return (
-        <div className={cx('wrapper', className)}>
+        <>
             <Swiper
-                // install Swiper modules
-                modules={[Navigation, Pagination, Scrollbar, A11y]}
-                autoplay={{ delay: 300 }}
-                loop={true}
+                style={{ height: '500px', width: '1284px' }}
                 slidesPerView={1}
-                navigation
-                pagination={{ clickable: true }}
+                spaceBetween={30}
+                loop={true}
+                pagination={{
+                    clickable: true,
+                }}
+                navigation={true}
+                autoplay={{
+                    delay: 3000, // Delay between slides in milliseconds (3000ms = 3 seconds)
+                    disableOnInteraction: false, // Autoplay won't stop after user interaction
+                }}
+                modules={[Pagination, Navigation, Autoplay]} // Add Autoplay module
+                className="mySwiper"
             >
-                {props.map((slide) => {
-                    return (
-                        <SwiperSlide key={v4()}>
-                            <img src={slide.image_event} alt={slide.description} />
-                        </SwiperSlide>
-                    );
-                })}
+                {sliders.map((slide, index) => (
+                    <SwiperSlide key={index}>
+                        <img
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            src={slide.img}
+                            alt={slide.title}
+                        />
+                    </SwiperSlide>
+                ))}
             </Swiper>
-        </div>
+        </>
     );
 }
-
-export default Slider;

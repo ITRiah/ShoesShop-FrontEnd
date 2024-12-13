@@ -5,6 +5,8 @@ import Button from '~/components/Button';
 import CartItem from './CartItem';
 import routes from '~/config/routes';
 
+import { useNavigate } from 'react-router-dom';
+
 // import { getCart, calculateTotal } from '~/ultils/session';
 import styles from './Cart.module.scss';
 import { v4 } from 'uuid';
@@ -12,12 +14,13 @@ import { getCookie, setCookie } from '~/ultils/cookie';
 import { create, payments_vnpay, payments_response } from '~/ultils/services/OrdersService';
 import { getProfile } from '~/ultils/services/userService';
 import { isLogin } from '~/ultils/cookie/checkLogin';
-import { getCart, updateCart, deleteCart } from '~/ultils/services/cartService';
+import { getCart } from '~/ultils/services/cartService';
 import { getall } from '~/ultils/services/voucherService';
 import { Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCab, faCartPlus } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
+import ModalLoading from './ModalLoading';
 
 const cx = classNames.bind(styles);
 
@@ -30,7 +33,12 @@ function Cart() {
     const [selectedVoucherObject, setSelectedVoucherObject] = useState(null);
     const [voucherList, setVoucherList] = useState([]);
     const [paymentMethod, setPaymentMethod] = useState('CASH');
+    const [shippingMethod, setShippingMethod] = useState('FAST');
     const [reloadComponent, setReloadComponent] = useState('');
+    const [checkedList, setCheckedList] = useState([]); // State to track checked items
+
+    const navigate = useNavigate();
+
     const [billingInfo, setBillingInfo] = useState({
         fullName: '',
         shippingAddress: '',
@@ -40,8 +48,10 @@ function Cart() {
         note: '',
     });
 
-    const calculateTotal = (cartItems) => {
-        return cartItems.reduce((total, item) => total + item.productDetail.price * item.quantity, 0);
+    const calculateTotal = (cartItems, checkedList) => {
+        return cartItems
+            .filter((item) => checkedList.includes(item.id)) // Filter checked items
+            .reduce((total, item) => total + item.productDetail.price * item.quantity, 0); // Calculate total for checked items
     };
 
     useEffect(() => {
@@ -95,14 +105,16 @@ function Cart() {
     }, [billingInfo]);
 
     useEffect(() => {
-        if (!items.length) {
+        if (items.length === 0) {
             setTotal(0);
             return;
         }
 
-        let total = calculateTotal(items);
+        // Calculate the total for only checked items
+        let total = calculateTotal(items, checkedList);
         let totalDiscount = 0;
 
+        // Apply the voucher discount if any
         if (selectedVoucherObject) {
             totalDiscount = (total * selectedVoucherObject.value) / 100;
 
@@ -115,30 +127,19 @@ function Cart() {
         }
 
         setTotal(total);
-    }, [items, selectedVoucherObject, reloadComponent, selectedValueVoucher]);
+    }, [items, selectedVoucherObject, checkedList, reloadComponent, selectedValueVoucher]);
 
-    useEffect(() => {
-        if (!items.length) {
-            setTotal(0);
-            return;
-        }
-
-        let total = calculateTotal(items);
-        let totalDiscount = 0;
-
-        if (selectedVoucherObject) {
-            totalDiscount = (total * selectedVoucherObject.value) / 100;
-
-            // Apply the maximum discount limit
-            if (totalDiscount > selectedVoucherObject.maxMoney) {
-                totalDiscount = selectedVoucherObject.maxMoney;
+    // Handle checkbox change for individual item
+    const handleCheckboxChange = (itemId) => {
+        setCheckedList((prevCheckedList) => {
+            const isChecked = prevCheckedList.includes(itemId);
+            if (isChecked) {
+                return prevCheckedList.filter((id) => id !== itemId); // Uncheck item
+            } else {
+                return [...prevCheckedList, itemId]; // Check item
             }
-
-            total = total - totalDiscount;
-        }
-
-        setTotal(total);
-    }, [items, reloadComponent]);
+        });
+    };
 
     const submit = async () => {
         if (!isValid) {
@@ -148,12 +149,12 @@ function Cart() {
 
         setIsSubmitting(true); // Disable nút
 
-        const pdIds = items.map((item) => item.id);
+        const pdIds = items.filter((item) => checkedList.includes(item.id)).map((item) => item.id);
 
         const payload = {
             fullName: billingInfo.fullName,
             shippingAddress: billingInfo.shippingAddress,
-            shippingMethod: 'FAST',
+            shippingMethod: shippingMethod,
             paymentMethod: paymentMethod,
             phone: billingInfo.phone,
             note: billingInfo.note,
@@ -164,22 +165,25 @@ function Cart() {
 
         try {
             if (isLogin()) {
-                if (paymentMethod === 'CASH') {
-                    const response = await create(payload);
-                    if (response.statusCode === 201) {
+                const response = await create(payload);
+                if (response.statusCode === 201) {
+                    if (paymentMethod === 'CREDIT_CARD') {
+                        setCookie('billingInfo', billingInfo);
+                        setCookie('totalAmounnt', total);
+                        setCookie('voucher', selectedVoucherObject);
+                        const response2 = await payments_vnpay(total, 11111);
+                        if (response2.statusCode === 200 && response2.data.code === 'ok') {
+                            window.open(response2.data.paymentUrl, '_blank');
+                        }
+                    } else {
+                        navigate(`?s=success`);
+                        setCheckedList([]);
                         setReloadComponent(v4());
                         toast.success('Đặt hàng thành công');
-                    } else {
-                        toast.error(response.message);
+                        setIsSubmitting(false);
                     }
                 } else {
-                    setCookie('billingInfo', billingInfo);
-                    setCookie('totalAmounnt', total);
-                    setCookie('voucher', selectedVoucherObject);
-                    const response = await payments_vnpay(total);
-                    if (response.statusCode === 200 && response.data.code === 'ok') {
-                        window.open(response.data.paymentUrl, '_blank');
-                    }
+                    toast.error(response.message);
                 }
             } else {
                 toast.warn('Đăng nhập để đặt hàng');
@@ -188,12 +192,12 @@ function Cart() {
             console.error('Error during submit:', error);
             toast.error('Có lỗi xảy ra, vui lòng thử lại.');
         } finally {
-            setIsSubmitting(false);
         }
     };
 
     return (
         <>
+            <ModalLoading show={isSubmitting} />
             {items.length ? (
                 <div className={cx('wrapper')}>
                     {items.length > 0 ? (
@@ -207,6 +211,20 @@ function Cart() {
                                     >
                                         <thead>
                                             <tr>
+                                                <th className={cx('checked')}>
+                                                    <input
+                                                        type="checkbox"
+                                                        onChange={() => {
+                                                            // Check/uncheck all items
+                                                            if (checkedList.length === items.length) {
+                                                                setCheckedList([]); // Uncheck all
+                                                            } else {
+                                                                setCheckedList(items.map((item) => item.id)); // Check all
+                                                            }
+                                                        }}
+                                                        checked={checkedList.length === items.length}
+                                                    />
+                                                </th>
                                                 <th>Hình ảnh</th>
                                                 <th>Chi tiết</th>
                                                 <th>Giá bán</th>
@@ -221,8 +239,11 @@ function Cart() {
                                                     item={item}
                                                     onUpdateTotal={() => {
                                                         setReloadComponent(v4());
+                                                        navigate(`?a=${item.id}`);
                                                     }}
                                                     reloadComponent={reloadComponent}
+                                                    checked={checkedList.includes(item.id)} // Set checked status
+                                                    onCheckboxChange={() => handleCheckboxChange(item.id)} // Handle individual checkbox change
                                                 />
                                             ))}
                                         </tbody>
@@ -330,6 +351,33 @@ function Cart() {
                                         ) : null}
                                     </div>
                                     <br></br>
+                                    <div className={cx('ShippingMethod')}>
+                                        <div>Phương thức vận chuyển</div>
+                                        <div>
+                                            <input
+                                                type="radio"
+                                                name="shippingmethod"
+                                                id="shippingmethod1"
+                                                value="FAST"
+                                                defaultChecked
+                                                onChange={(e) => setShippingMethod(e.target.value)}
+                                            />
+                                            &nbsp;
+                                            <label htmlFor="shippingmethod1">Nhanh</label>
+                                        </div>
+                                        <div>
+                                            <input
+                                                type="radio"
+                                                name="shippingmethod"
+                                                id="shippingmethod2"
+                                                value="EXPRESS"
+                                                onChange={(e) => setShippingMethod(e.target.value)}
+                                            />
+                                            &nbsp;
+                                            <label htmlFor="shippingmethod2">Hỏa tốc</label>
+                                        </div>
+                                    </div>
+                                    <br></br>
                                     <div className={cx('PaymentMethod')}>
                                         <div>Phương thức thanh toán</div>
                                         <div>
@@ -365,7 +413,7 @@ function Cart() {
                                             className={cx('btn-submit')}
                                             onClick={submit}
                                             primary
-                                            disabled={isSubmitting} // Disable khi đang chờ response
+                                            disabled={isSubmitting || checkedList.length <= 0} // Disable khi đang chờ response
                                         >
                                             {isSubmitting ? 'Đang xử lý...' : 'Đặt Hàng'}
                                         </Button>
