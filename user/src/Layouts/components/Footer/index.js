@@ -14,11 +14,13 @@ function Footer() {
                         <Logo />
                     </div>
                     <div>
-                        <p>Địa chỉ: 16 Ngõ 2 - Phố Nguyên Xá - Phường Minh Khai - Quận Bắc Từ Liêm - Hà Nội</p>
+                        <p>Địa chỉ: Số 88-Cầu Diễn - Bắc Từ Liêm - Hà Nội</p>
                     </div>
                 </div>
                 <div className={cx('intro')}>
-                    <h3>Hotline: 19008911</h3>
+                    <h3>Liên hệ</h3>
+                    <p>Điện thoại: 0382952063</p>
+                    <p>Email: vhai31102002@gmail.com</p>
                 </div>
                 <div className={cx('member')}>
                     <h3>Thông báo</h3>

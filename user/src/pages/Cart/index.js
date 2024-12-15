@@ -126,8 +126,11 @@ function Cart() {
             total = total - totalDiscount;
         }
 
+        if (shippingMethod === 'FAST') total += 15000;
+        else total += 50000;
+
         setTotal(total);
-    }, [items, selectedVoucherObject, checkedList, reloadComponent, selectedValueVoucher]);
+    }, [items, selectedVoucherObject, checkedList, reloadComponent, selectedValueVoucher, shippingMethod]);
 
     // Handle checkbox change for individual item
     const handleCheckboxChange = (itemId) => {

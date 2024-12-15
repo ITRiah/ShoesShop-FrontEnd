@@ -69,9 +69,6 @@ function Login() {
                 onChange={(event) => setPassword(event.target.value)}
             />
             <div className={cx('group_btn')}>
-                <Button rounded to={routes.signup}>
-                    Đăng Kí
-                </Button>
                 <Button primary onClick={handleSubmit}>
                     Đăng Nhập
                 </Button>

@@ -19,7 +19,7 @@ import Vourchers from '~/pages/Vourchers';
 const publicRoutes = [
     { path: config.routes.home, component: Home },
     { path: config.routes.login, component: Login, layout: null },
-    { path: config.routes.signup, component: Signup, layout: null },
+    // { path: config.routes.signup, component: Signup, layout: null },
     { path: config.routes.accounts, component: Accounts },
     { path: config.routes.orders, component: Orders },
     { path: config.routes.categories, component: Categories },

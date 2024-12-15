@@ -128,8 +128,8 @@ function Orders() {
                                         <tr>
                                             <th>Hình ảnh</th>
                                             <th>Tên sản phẩm</th>
-                                            <th>Size</th>
-                                            <th>Màu sắc</th>
+                                            <th width={70}>Size</th>
+                                            <th width={120}>Màu sắc</th>
                                             <th width={140}>Giá bán</th>
                                             <th width={50}>Số lượng</th>
                                         </tr>

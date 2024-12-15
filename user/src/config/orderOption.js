@@ -16,7 +16,7 @@ export const paymentStatusOptions = [
     },
     {
         title: 'COMPLETE',
-        description: 'Thành công',
+        description: 'Đã thanh toán',
     },
 ];
 export const paymentMethodOptions = [
