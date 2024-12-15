@@ -15,6 +15,7 @@ import {
     paymentMethodOptions,
     paymentStatusOptions,
 } from '~/config/orderOption';
+import { colorPalette, getColorName } from '~/config/colorPalette';
 
 const cx = classNames.bind(styles);
 
@@ -129,8 +130,8 @@ function Orders() {
                                             <th>Tên sản phẩm</th>
                                             <th>Size</th>
                                             <th>Màu sắc</th>
-                                            <th>Giá bán</th>
-                                            <th>Số lượng</th>
+                                            <th width={140}>Giá bán</th>
+                                            <th width={50}>Số lượng</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -141,10 +142,13 @@ function Orders() {
                                                 </td>
                                                 <td>{item.productName}</td>
                                                 <td>{item.productDetail.size}</td>
-                                                <td>
+                                                <td>{getColorName(item.productDetail.color)}</td>
+                                                <td width={140}>
                                                     {new Intl.NumberFormat('vi-VN').format(item.productDetail.price)}đ
                                                 </td>
-                                                <td style={{ textAlign: 'center' }}>{item.quantity}</td>
+                                                <td width={50} style={{ textAlign: 'center' }}>
+                                                    {item.quantity}
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>

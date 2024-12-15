@@ -1,4 +1,4 @@
-export const colorPalette = {
+const colorPalette = {
     black: { name: 'Đen', rgb: 'rgb(0, 0, 0)' },
     white: { name: 'Trắng', rgb: 'rgb(255, 255, 255)' },
     brown: { name: 'Nâu', rgb: 'rgb(139, 69, 19)' },
@@ -17,4 +17,13 @@ export const colorPalette = {
     pink: { name: 'Hồng', rgb: 'rgb(255, 105, 180)' },
     orange: { name: 'Cam', rgb: 'rgb(255, 165, 0)' },
     purple: { name: 'Tím', rgb: 'rgb(128, 0, 128)' },
+};
+
+export const getColorName = function (rgbValue) {
+    for (const key in colorPalette) {
+        if (colorPalette[key].rgb === rgbValue) {
+            return colorPalette[key].name;
+        }
+    }
+    return null; // Return null if no match is found
 };

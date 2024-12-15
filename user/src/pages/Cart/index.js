@@ -170,6 +170,7 @@ function Cart() {
                     navigate(`?s=success`);
                     setCheckedList([]);
                     setReloadComponent(v4());
+                    setIsSubmitting(false);
                     if (paymentMethod === 'CREDIT_CARD') {
                         setCookie('billingInfo', billingInfo);
                         setCookie('totalAmounnt', total);
