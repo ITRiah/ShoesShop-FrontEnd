@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import routes from '~/config/routes';
 import { login } from '~/ultils/services/userService';
 import { getCookie, setCookie } from '~/ultils/cookie';
+import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
 
@@ -67,10 +68,12 @@ function Login() {
                     window.location.href = routes.home;
                 }, 1000);
             } else {
-                setErrorMessage(response.message);
+                if (response.data.message === 'Bad credentials') {
+                    toast.error('Tài khoản hoặc mật khẩu không chính xác!');
+                } else toast.error(response.data.message);
             }
         } catch (error) {
-            setErrorMessage('Thông tin đăng nhập không chính xác');
+            toast.error('Lỗi không xác định');
         }
     };
 

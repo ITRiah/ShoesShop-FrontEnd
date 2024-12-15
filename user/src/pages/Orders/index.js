@@ -8,6 +8,14 @@ import { v4 } from 'uuid';
 import Button from '~/components/Button';
 import { toast } from 'react-toastify';
 
+import {
+    shippingMethodOptions,
+    getDes,
+    orderStatusOptions,
+    paymentMethodOptions,
+    paymentStatusOptions,
+} from '~/config/orderOption';
+
 const cx = classNames.bind(styles);
 
 function Orders() {
@@ -82,7 +90,7 @@ function Orders() {
                                         style={
                                             item.status === 'DELIVERED'
                                                 ? { background: 'green' }
-                                                : item.status === 'CANCELLED'
+                                                : item.status === 'CANCELED'
                                                 ? { background: 'red' }
                                                 : { background: 'orange' }
                                         }
@@ -102,9 +110,10 @@ function Orders() {
                             <p>Người nhận: {active.fullName}</p>
                             <p>Địa chỉ: {active.shippingAddress}</p>
                             <p>Điện thoại: {active.phone}</p>
-                            <p>Trạng thái: {active.status}</p>
-                            <p>Phương thức vận chuyển: {active.shippingMethod}</p>
-                            <p>Phương thức thanh toán: {active.paymentMethod}</p>
+                            <p>Trạng thái: {getDes(active.status, orderStatusOptions)}</p>
+                            <p>Phương thức vận chuyển: {getDes(active.shippingMethod, shippingMethodOptions)}</p>
+                            <p>Phương thức thanh toán: {getDes(active.paymentMethod, paymentMethodOptions)}</p>
+                            <p>Trạng thái thanh toán: {getDes(active.paymentStatus, paymentStatusOptions)}</p>
                             <p>Thành tiền: {new Intl.NumberFormat('vi-VN').format(active.totalAmount)}đ</p>
                         </div>
                         <div>
@@ -118,6 +127,8 @@ function Orders() {
                                         <tr>
                                             <th>Hình ảnh</th>
                                             <th>Tên sản phẩm</th>
+                                            <th>Size</th>
+                                            <th>Màu sắc</th>
                                             <th>Giá bán</th>
                                             <th>Số lượng</th>
                                         </tr>
@@ -129,6 +140,7 @@ function Orders() {
                                                     <img src={item.productDetail.img} alt={item.productDetail.name} />
                                                 </td>
                                                 <td>{item.productName}</td>
+                                                <td>{item.productDetail.size}</td>
                                                 <td>
                                                     {new Intl.NumberFormat('vi-VN').format(item.productDetail.price)}đ
                                                 </td>
@@ -140,7 +152,7 @@ function Orders() {
                             ) : null}
                         </div>
                         <div className={cx('action')}>
-                            {active.paymentMethod === 'CASH' && active.status === 'PENDING' ? (
+                            {active.status === 'PENDING' ? (
                                 <Button
                                     className={cx('btn-delete')}
                                     primary

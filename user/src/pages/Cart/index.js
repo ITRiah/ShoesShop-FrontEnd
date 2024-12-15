@@ -167,11 +167,14 @@ function Cart() {
             if (isLogin()) {
                 const response = await create(payload);
                 if (response.statusCode === 201) {
+                    navigate(`?s=success`);
+                    setCheckedList([]);
+                    setReloadComponent(v4());
                     if (paymentMethod === 'CREDIT_CARD') {
                         setCookie('billingInfo', billingInfo);
                         setCookie('totalAmounnt', total);
                         setCookie('voucher', selectedVoucherObject);
-                        const response2 = await payments_vnpay(total, 11111);
+                        const response2 = await payments_vnpay(total, response.data);
                         if (response2.statusCode === 200 && response2.data.code === 'ok') {
                             window.open(response2.data.paymentUrl, '_blank');
                         }
@@ -180,7 +183,6 @@ function Cart() {
                         setCheckedList([]);
                         setReloadComponent(v4());
                         toast.success('Đặt hàng thành công');
-                        setIsSubmitting(false);
                     }
                 } else {
                     toast.error(response.message);
@@ -258,21 +260,22 @@ function Cart() {
                                 <div className={cx('billing-info')}>
                                     <FormInput
                                         label="Họ tên"
-                                        value={billingInfo.fullName ?? ''}
+                                        value={billingInfo.fullName !== 'null' ? billingInfo.fullName : ''}
                                         onChange={(e) => setBillingInfo({ ...billingInfo, fullName: e.target.value })}
                                     />
                                     <FormInput
                                         label="Địa chỉ"
-                                        value={!!billingInfo.shippingAddress ? billingInfo.shippingAddress : ''}
+                                        value={
+                                            billingInfo.shippingAddress !== 'null' ? billingInfo.shippingAddress : ''
+                                        }
                                         onChange={(e) =>
                                             setBillingInfo({ ...billingInfo, shippingAddress: e.target.value })
                                         }
                                     />
-
                                     <div className={cx('contact')}>
                                         <FormInput
                                             label="Điện thoại"
-                                            value={billingInfo.phone ?? ''}
+                                            value={billingInfo.phone !== 'null' ? billingInfo.phone : ''}
                                             onChange={(e) => setBillingInfo({ ...billingInfo, phone: e.target.value })}
                                         />
                                     </div>

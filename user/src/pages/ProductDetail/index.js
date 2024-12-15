@@ -95,9 +95,13 @@ function ProductDetail() {
             if (prices.length) {
                 const minPrice = Math.min(...prices);
                 const maxPrice = Math.max(...prices);
-                return `${new Intl.NumberFormat('vi-VN').format(minPrice)}đ - ${new Intl.NumberFormat('vi-VN').format(
-                    maxPrice,
-                )}đ`;
+                if (minPrice < maxPrice) {
+                    return `${new Intl.NumberFormat('vi-VN').format(minPrice)}đ - ${new Intl.NumberFormat(
+                        'vi-VN',
+                    ).format(maxPrice)}đ`;
+                } else {
+                    return `${new Intl.NumberFormat('vi-VN').format(minPrice)}đ`;
+                }
             }
         }
         // If size/color is selected, display the selected price
@@ -160,9 +164,13 @@ function ProductDetail() {
                                         return acc;
                                     }, [])
                                     .map((item) => {
-                                        const isAvailable = product.productDetailResponseList.some(
-                                            (detail) => detail.color === item.color && detail.size === selectedSize,
-                                        );
+                                        // Kiểm tra khả dụng của màu dựa trên kích thước đã chọn
+                                        const isAvailable = selectedSize
+                                            ? product.productDetailResponseList.some(
+                                                  (detail) =>
+                                                      detail.color === item.color && detail.size === selectedSize,
+                                              )
+                                            : true; // Hiển thị tất cả màu nếu chưa chọn kích thước
 
                                         return (
                                             <>

@@ -42,7 +42,12 @@ function Login() {
                 navigate(routes.home);
                 return;
             } else {
-                toast.error(response.data.message);
+                if (response.data.message === 'Bad credentials') {
+                    toast.error('Tài khoản hoặc mật khẩu không chính xác!');
+                } else {
+                    toast.error(response.data.message);
+                }
+
                 return;
             }
 

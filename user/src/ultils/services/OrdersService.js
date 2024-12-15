@@ -80,7 +80,7 @@ export const deleted = async (id, reason) => {
 
 export const payments_vnpay = async (amount, vnp_TxnRef) => {
     try {
-        const res = await httpRequest.get('v1/payments/vn-pay?amount=' + amount + '&vnp_TxnRef=' + vnp_TxnRef, {});
+        const res = await httpRequest.get('v1/payments/vn-pay?amount=' + amount + '&orderId=' + vnp_TxnRef, {});
         return res;
     } catch (error) {
         console.log(error);

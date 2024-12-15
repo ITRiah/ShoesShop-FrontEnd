@@ -4,10 +4,10 @@ import styles from './SearchForm.module.scss';
 
 const cx = classNames.bind(styles);
 
-function Search({ value, onChange }) {
+function Search({ value, onChange, onKeyDown }) {
     return (
         <div className={cx('wrapper')}>
-            <input placeholder="Tìm kiếm..." type="text" onChange={onChange} value={value} />
+            <input placeholder="Tìm kiếm..." type="text" onChange={onChange} onKeyDown={onKeyDown} value={value} />
         </div>
     );
 }

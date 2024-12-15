@@ -43,7 +43,10 @@ export const getProfile = async (user) => {
 
 export const update = async (req) => {
     try {
-        const res = await httpRequest.update('v1/users', req);
+        const res = await httpRequest.update('v1/users', {
+            ...req,
+            role: 'USER',
+        });
         return res.data;
     } catch (e) {
         console.log(e);
@@ -94,10 +97,12 @@ export const forgotPassword = async (req) => {
 
 export const updatePassword = async (req) => {
     try {
-        const res = await httpRequest.update(
-            'v1/users/password?email=' + req.email + '&password=' + req.password + '&otp=' + req.otp,
-            {},
-        );
+        const res = await httpRequest.update('v1/users/password', {
+            email: req.email,
+            otp: req.otp,
+            newPassword: req.password,
+            // oldPassword: req.oldPassword,
+        });
         return res.data;
     } catch (error) {
         console.log(error);

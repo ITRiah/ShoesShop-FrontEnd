@@ -109,6 +109,11 @@ function Header() {
                             onChange={(e) => {
                                 setSearch(e.target.value);
                             }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    navigate('/search?s=' + search);
+                                }
+                            }}
                         />
                     </SearchList>
                 ) : (

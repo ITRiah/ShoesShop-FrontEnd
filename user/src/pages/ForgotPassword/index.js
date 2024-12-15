@@ -73,6 +73,12 @@ function ForgotPassword() {
         }
     };
 
+    const validatePassword = (password) => {
+        // Password must have at least 8 characters, including letters, numbers, and special characters
+        const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return regex.test(password);
+    };
+
     const handleSubmitPasswordReset = async (e) => {
         e.preventDefault();
 
@@ -81,9 +87,14 @@ function ForgotPassword() {
             return;
         }
 
+        if (!validatePassword(password)) {
+            toast.warn('Mật khẩu phải có tối thiểu 8 ký tự bao gồm chữ, số và ký tự đặc biệt');
+            return;
+        }
+
         try {
             const response = await updatePassword({ email, otp, password });
-            if (response.statusCode === 201) {
+            if (response.statusCode === 200) {
                 toast.success('Khôi phục mật khẩu thành công!');
                 setIsSuccess(true);
                 setTimeout(() => {
