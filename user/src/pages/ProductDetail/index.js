@@ -62,6 +62,7 @@ function ProductDetail() {
                 const data = {
                     productDetailId: selectedProductDetail.id,
                     quantity: 1,
+                    actionType: 0,
                 };
                 try {
                     const response = await updateCart(data); // Đợi xử lý cập nhật giỏ hàng

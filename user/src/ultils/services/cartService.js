@@ -10,13 +10,20 @@ export const getCart = async (req) => {
 };
 
 export const updateCart = async (req) => {
+    const actionType = req.actionType === 0 ? req.actionType : 1;
     try {
         const res = await httpRequest.update(
-            'v1/carts?productDetailId=' + req.productDetailId + '&quantity=' + req.quantity,
+            'v1/carts?productDetailId=' +
+                req.productDetailId +
+                '&quantity=' +
+                req.quantity +
+                '&actionType=' +
+                actionType,
             {
                 params: {
                     productDetailId: req.productDetailId,
                     quantity: req.quantity,
+                    actionType,
                 },
             },
         );
