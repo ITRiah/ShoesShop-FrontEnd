@@ -18,3 +18,12 @@ export const colorPalette = {
     orange: { name: 'Cam', rgb: 'rgb(255, 165, 0)' },
     purple: { name: 'Tím', rgb: 'rgb(128, 0, 128)' },
 };
+
+export const getColorName = function (rgbValue) {
+    for (const key in colorPalette) {
+        if (colorPalette[key].rgb === rgbValue) {
+            return colorPalette[key].name;
+        }
+    }
+    return null; // Return null if no match is found
+};

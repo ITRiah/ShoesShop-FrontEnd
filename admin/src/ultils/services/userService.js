@@ -33,7 +33,6 @@ export const topprice = async () => {
 };
 
 export const getbyid = async (id) => {
-    //console.log(req);
     try {
         const res = await httpRequest.get('v1/users/' + id, {});
         return res;

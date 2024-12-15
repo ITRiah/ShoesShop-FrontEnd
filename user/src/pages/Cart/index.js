@@ -172,9 +172,6 @@ function Cart() {
                     setReloadComponent(v4());
                     setIsSubmitting(false);
                     if (paymentMethod === 'CREDIT_CARD') {
-                        setCookie('billingInfo', billingInfo);
-                        setCookie('totalAmounnt', total);
-                        setCookie('voucher', selectedVoucherObject);
                         const response2 = await payments_vnpay(total, response.data);
                         if (response2.statusCode === 200 && response2.data.code === 'ok') {
                             window.open(response2.data.paymentUrl, '_blank');
@@ -214,7 +211,7 @@ function Cart() {
                                     >
                                         <thead>
                                             <tr>
-                                                <th className={cx('checked')}>
+                                                <th rowSpan={2} className={cx('checked')}>
                                                     <input
                                                         type="checkbox"
                                                         onChange={() => {
@@ -228,11 +225,23 @@ function Cart() {
                                                         checked={checkedList.length === items.length}
                                                     />
                                                 </th>
-                                                <th>Hình ảnh</th>
-                                                <th>Chi tiết</th>
-                                                <th>Giá bán</th>
-                                                <th>Số lượng</th>
-                                                <th></th>
+                                                <th rowSpan={2}>Hình ảnh</th>
+                                                <th colSpan={2} width={700} style={{ textAlign: 'center' }}>
+                                                    Chi tiết
+                                                </th>
+                                                <th rowSpan={2} width={150}>
+                                                    Giá bán
+                                                </th>
+                                                <th rowSpan={2} width={80}>
+                                                    Số lượng
+                                                </th>
+                                                <th rowSpan={2} width={50}></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Tên sản phẩm</th>
+                                                <th width={70} style={{ maxWidth: '70px' }}>
+                                                    Màu sắc
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>

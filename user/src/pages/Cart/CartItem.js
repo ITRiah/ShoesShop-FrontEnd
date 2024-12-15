@@ -9,6 +9,7 @@ import { updateCart, deleteCart } from '~/ultils/services/cartService';
 
 import { getbyid } from '~/ultils/services/productService';
 import { v4 } from 'uuid';
+import { getColorName } from '~/config/colorPalette';
 
 const cx = classNames.bind(styles);
 
@@ -49,15 +50,10 @@ function CartItem({ item, onUpdateTotal, checked, onCheckboxChange }) {
                 <img src={item.productDetail.img} alt="n" />
             </td>
             <td>
-                <div>
-                    <p
-                        style={{
-                            maxWidth: '400px',
-                        }}
-                    >
-                        [ Size: {item.productDetail.size} ] - {item.productName}
-                    </p>
-                </div>
+                [ Size: {item.productDetail.size} ] - {item.productName}
+            </td>
+            <td width={70} style={{ maxWidth: '70px', textAlign: 'center' }}>
+                {getColorName(item.productDetail.color)}
             </td>
             <td>{formatPrice}đ</td>
             <td>
@@ -73,7 +69,7 @@ function CartItem({ item, onUpdateTotal, checked, onCheckboxChange }) {
                     min="1"
                 />
             </td>
-            <td>
+            <td width={50}>
                 <FontAwesomeIcon onClick={handleRemoveFromCart} className={cx('delete-icon')} icon={faTrashCan} />
             </td>
         </tr>

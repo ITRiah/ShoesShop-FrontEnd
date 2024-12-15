@@ -4,6 +4,14 @@ import { useEffect, useState } from 'react';
 import { getbyid, update } from '~/ultils/services/OrdersService';
 import { v4 } from 'uuid';
 import { toast } from 'react-toastify';
+import { getColorName } from '~/config/colorPalette';
+import {
+    getDes,
+    orderStatusOptions,
+    paymentMethodOptions,
+    paymentStatusOptions,
+    shippingMethodOptions,
+} from '~/config/orderOption';
 
 function FormOrder({ onClose, id }) {
     const [orderData, setOrderData] = useState(null);
@@ -29,12 +37,12 @@ function FormOrder({ onClose, id }) {
     }
 
     const statusOptions = [
-        { status: 'CANCELED' },
-        { status: 'CONFIRMED' },
-        { status: 'DELIVERED' },
         { status: 'PENDING' },
+        { status: 'CONFIRMED' },
         { status: 'PROCESSING' },
         { status: 'SHIPPED' },
+        { status: 'DELIVERED' },
+        { status: 'CANCELED' },
     ];
 
     function onUpdateOrder() {
@@ -95,11 +103,15 @@ function FormOrder({ onClose, id }) {
                         </FormGroup>
                         <FormGroup>
                             <Form.Label>Phương thức thanh toán: </Form.Label>
-                            <FormControl disabled value={orderData.paymentMethod} />
+                            <FormControl disabled value={getDes(orderData.paymentMethod, paymentMethodOptions)} />
+                        </FormGroup>
+                        <FormGroup>
+                            <Form.Label>Trạng thái thanh toán: </Form.Label>
+                            <FormControl disabled value={getDes(orderData.paymentStatus, paymentStatusOptions)} />
                         </FormGroup>
                         <FormGroup>
                             <Form.Label>Phương thức vận chuyển: </Form.Label>
-                            <FormControl disabled value={orderData.shippingMethod} />
+                            <FormControl disabled value={getDes(orderData.shippingMethod, shippingMethodOptions)} />
                         </FormGroup>
 
                         <Form.Group controlId="status">
@@ -107,7 +119,7 @@ function FormOrder({ onClose, id }) {
                             <Form.Control as="select" value={status} onChange={handleChangeStatus}>
                                 {statusOptions.map((s) => (
                                     <option key={v4()} value={s.status}>
-                                        {s.status}
+                                        {getDes(s.status, orderStatusOptions)}
                                     </option>
                                 ))}
                             </Form.Control>
@@ -128,9 +140,9 @@ function FormOrder({ onClose, id }) {
                                 {products.map((item) => (
                                     <tr key={v4()}>
                                         <td>{item.id}</td>
-                                        <td>{item.productDetail.color}</td>
+                                        <td>{getColorName(item.productDetail.color)}</td>
                                         <td>{item.productDetail.size}</td>
-                                        <td>{item.productDetail.quantity}</td>
+                                        <td>{item.quantity}</td>
                                         <td
                                             style={{
                                                 textAlign: 'right',
