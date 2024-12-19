@@ -11,7 +11,7 @@ export const shippingMethodOptions = [
 
 export const paymentStatusOptions = [
     {
-        title: 'WATTING',
+        title: 'WAITING',
         description: 'Chưa thanh toán',
     },
     {

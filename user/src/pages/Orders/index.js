@@ -55,7 +55,7 @@ function Orders() {
             if (response.statusCode === 204) {
                 setOrders((prevOrders) => prevOrders.filter((order) => order.id !== active.id));
                 toast.success('Hủy đơn hàng thành công!');
-                setActive({ ...active, status: 'CANCELLED' });
+                setActive({ ...active, status: 'CANCELED' });
             } else {
                 toast.error('Hủy đơn hàng không thành công!');
             }

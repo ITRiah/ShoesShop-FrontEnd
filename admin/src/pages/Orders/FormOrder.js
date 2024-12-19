@@ -17,6 +17,7 @@ function FormOrder({ onClose, id }) {
     const [orderData, setOrderData] = useState(null);
     const [products, setProducts] = useState([]);
     const [status, setStatus] = useState('');
+    const [paymentStatus, setPaymentStatus] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -24,6 +25,7 @@ function FormOrder({ onClose, id }) {
                 const response = await getbyid(id);
                 setOrderData(response.data);
                 setStatus(response.data.status);
+                setPaymentStatus(response.data.paymentStatus);
                 setProducts(response.data.orderDetails);
             } catch (e) {
                 console.log(e);
@@ -36,6 +38,10 @@ function FormOrder({ onClose, id }) {
         setStatus(e.target.value);
     }
 
+    function handleChangePaymentStatus(e) {
+        setPaymentStatus(e.target.value);
+    }
+
     const statusOptions = [
         { status: 'PENDING' },
         { status: 'CONFIRMED' },
@@ -45,11 +51,14 @@ function FormOrder({ onClose, id }) {
         { status: 'CANCELED' },
     ];
 
+    const paymentsStatusOptions = [{ status: 'WAITING' }, { status: 'COMPLETE' }];
+
     function onUpdateOrder() {
         if (id) {
             const data = {
                 id: id,
                 status: status,
+                paymentStatus: paymentStatus,
             };
             const updateData = async () => {
                 try {
@@ -107,7 +116,13 @@ function FormOrder({ onClose, id }) {
                         </FormGroup>
                         <FormGroup>
                             <Form.Label>Trạng thái thanh toán: </Form.Label>
-                            <FormControl disabled value={getDes(orderData.paymentStatus, paymentStatusOptions)} />
+                            <Form.Control as="select" value={paymentStatus} onChange={handleChangePaymentStatus}>
+                                {paymentsStatusOptions.map((s) => (
+                                    <option key={v4()} value={s.status}>
+                                        {getDes(s.status, paymentStatusOptions)}
+                                    </option>
+                                ))}
+                            </Form.Control>
                         </FormGroup>
                         <FormGroup>
                             <Form.Label>Phương thức vận chuyển: </Form.Label>

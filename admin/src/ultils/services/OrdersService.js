@@ -62,12 +62,15 @@ export const deleted = async (id) => {
 
 export const update = async (req) => {
     try {
-        const res = await httpRequest.update('v1/orders?' + 'id=' + req.id + '&status=' + req.status, {
-            params: {
-                id: req.id,
-                status: req.status,
+        const res = await httpRequest.update(
+            'v1/orders?' + 'id=' + req.id + '&status=' + req.status + '&paymentStatus=' + req.paymentStatus,
+            {
+                params: {
+                    id: req.id,
+                    status: req.status,
+                },
             },
-        });
+        );
         return res.data;
     } catch (e) {
         console.log(e);

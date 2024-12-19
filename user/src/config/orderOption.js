@@ -11,7 +11,7 @@ export const shippingMethodOptions = [
 
 export const paymentStatusOptions = [
     {
-        title: 'WATTING',
+        title: 'WAITING',
         description: 'Chưa thanh toán',
     },
     {
@@ -58,5 +58,7 @@ export const orderStatusOptions = [
 ];
 
 export const getDes = function (title, options) {
-    return options.find((option) => option.title === title).description;
+    return options.find((option) => option.title === title)
+        ? options.find((option) => option.title === title).description
+        : null;
 };

@@ -77,6 +77,14 @@ function Vourcher({ props, onEventDeleted, onUpdate }) {
                 <p>{props.code}</p>
                 <p>Số lượng: {props.quantity}</p>
                 <p>Hạn: {formatDate(props.expiredTime)}</p>
+                <p>
+                    Trạng Thái:
+                    {props.isDeleted ? (
+                        <span className="error"> Đã xóa</span>
+                    ) : (
+                        <span className="success"> Hoạt động</span>
+                    )}
+                </p>
             </div>
         </div>
     );

@@ -96,13 +96,20 @@ function Cart() {
         fetchData();
     }, [reloadComponent]);
 
-    useEffect(() => {
+    const validate = function () {
+        const phoneRegex = /^[0-9]{10,11}$/; // Chỉ chấp nhận số có 10-11 chữ số
         if (billingInfo.fullName && billingInfo.shippingAddress && billingInfo.phone) {
-            setIsValid(true);
+            if (!phoneRegex.test(billingInfo.phone)) {
+                toast.warn('Số điện thoại không hợp lệ');
+                return false;
+            } else {
+                return true;
+            }
         } else {
-            setIsValid(false);
+            toast.warn('Vui lòng nhập đủ thông tin liên hệ');
+            return false;
         }
-    }, [billingInfo]);
+    };
 
     useEffect(() => {
         if (items.length === 0) {
@@ -145,8 +152,7 @@ function Cart() {
     };
 
     const submit = async () => {
-        if (!isValid) {
-            toast.warn('Vui lòng nhập đủ thông tin liên hệ');
+        if (!validate()) {
             return;
         }
 

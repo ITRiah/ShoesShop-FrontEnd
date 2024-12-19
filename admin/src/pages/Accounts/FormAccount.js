@@ -39,9 +39,9 @@ function FormAccount({ onClose, id }) {
                             <p>
                                 Trạng thái:
                                 {!customer.isDeleted ? (
-                                    <span className="success"> Active</span>
+                                    <span className="success">Hoạt động</span>
                                 ) : (
-                                    <span className="error"> Blocked</span>
+                                    <span className="error">Đã xóa</span>
                                 )}{' '}
                             </p>
                             {order && (

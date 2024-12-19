@@ -11,6 +11,7 @@ import Ellipsis from '~/components/Ellipsis';
 import { getall } from '~/ultils/services/OrdersService';
 import FormFilter from './FormFilter';
 import FormOrder from './FormOrder';
+import { getDes, orderStatusOptions } from '~/config/orderOption';
 import { v4 } from 'uuid';
 
 const cx = classNames.bind(styles);
@@ -101,7 +102,7 @@ function Orders() {
                         fullName,
                         phone,
                         totalAmount: formatPrice + 'đ',
-                        status: status,
+                        status: getDes(status, orderStatusOptions),
                         action: <Ellipsis type2 menu={menu} />,
                     };
                 });

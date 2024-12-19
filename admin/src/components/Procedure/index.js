@@ -62,6 +62,14 @@ function Procedure({ props, onEventDeleted, onUpdate }) {
             <div className={cx('info')}>
                 <p>{props.name}</p>
                 <p>Tạo bởi: {props.createdBy}</p>
+                <p>
+                    Trạng Thái:
+                    {props.isDeleted ? (
+                        <span className="error"> Đã xóa</span>
+                    ) : (
+                        <span className="success"> Hoạt động</span>
+                    )}
+                </p>
             </div>
         </div>
     );

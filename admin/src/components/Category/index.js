@@ -67,9 +67,9 @@ function Category({ props, onEventDeleted, onUpdate }) {
                 <p>
                     Trạng Thái:
                     {props.isDeleted ? (
-                        <span className="error"> Disable</span>
+                        <span className="error"> Đã xóa</span>
                     ) : (
-                        <span className="success"> Enable</span>
+                        <span className="success"> Hoạt động</span>
                     )}
                 </p>
             </div>

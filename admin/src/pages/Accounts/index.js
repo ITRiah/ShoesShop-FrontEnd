@@ -77,9 +77,9 @@ function Accounts() {
                             lastName,
                             email,
                             status: !isDeleted ? (
-                                <span className="success">Active</span>
+                                <span className="success">Hoạt động</span>
                             ) : (
-                                <span className="error">Blocked</span>
+                                <span className="error">Đã xóa</span>
                             ),
                             action: <Ellipsis type2 menu={menu} />,
                         };
