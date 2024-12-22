@@ -85,6 +85,9 @@ function FormCate({ onClose, onSuccess, title, id }) {
                 if (fetchAPI.data.statusCode === 204 || fetchAPI.data.statusCode === 201) {
                     toast.success(fetchAPI.data.message);
                 }
+                if (fetchAPI.data.statusCode === 409) {
+                    toast.error('Tên danh mục đã tồn tại');
+                }
                 onSuccess(fetchAPI.data.statusCode);
             };
             updateData();
@@ -98,6 +101,9 @@ function FormCate({ onClose, onSuccess, title, id }) {
                     const fetchAPI = await create(data);
                     if (fetchAPI.data.statusCode === 204 || fetchAPI.data.statusCode === 201) {
                         toast.success(fetchAPI.data.message);
+                    }
+                    if (fetchAPI.data.statusCode === 409) {
+                        toast.error('Tên danh mục đã tồn tại');
                     }
                     onSuccess(fetchAPI.data.statusCode);
                 } catch (e) {

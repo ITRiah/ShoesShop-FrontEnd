@@ -141,7 +141,8 @@ function FormProducts({ onClose, title, onSuccess, id }) {
         const fetchAPI = async () => {
             try {
                 const response = id ? await update(data) : await create(data);
-                if (response.statusCode === 201) {
+                console.log(response);
+                if (response.statusCode === 201 || response.statusCode === 204 || response.statusCode === 200) {
                     toast.success(response.message);
                 }
                 onSuccess(response.statusCode);

@@ -8,7 +8,7 @@ import InputAuth from '~/components/InputAuth';
 import Button from '~/components/Button';
 import routes from '~/config/routes';
 import { login } from '~/ultils/services/adminService';
-import { setCookie } from '~/ultils/cookie';
+import { deleteCookie, setCookie } from '~/ultils/cookie';
 import { toast } from 'react-toastify';
 
 const cx = classNames.bind(styles);
@@ -24,6 +24,7 @@ function Login() {
         event.preventDefault();
         setError('');
         setMessage('');
+        deleteCookie('accessToken');
 
         if (!username || !password) {
             setError('Vui lòng nhập đầy đủ thông tin');
@@ -36,6 +37,10 @@ function Login() {
                 password: password,
             };
             const response = await login(req);
+            if (response.data.role === '[USER]') {
+                toast.error('Tài khoản của bạn không có quyền truy cập trang quản trị!');
+                return;
+            }
             if (response.statusCode === 200) {
                 toast.success('Đăng nhập thành công');
                 setCookie('accessToken', response.data.accessToken);

@@ -45,6 +45,7 @@ export const create = async (req) => {
         });
         return res;
     } catch (error) {
+        return error.response;
         console.log(error);
     }
 };
@@ -58,6 +59,7 @@ export const update = async (req) => {
         });
         return res;
     } catch (e) {
+        return e.response;
         console.log(e);
     }
 };

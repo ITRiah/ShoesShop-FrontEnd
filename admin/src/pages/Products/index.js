@@ -80,7 +80,7 @@ function Products() {
             {(showForm || (idShow && showForm)) && formType === 'product' ? (
                 <FormProducts
                     onSuccess={(e) => {
-                        if (e === 204 || e === 201) {
+                        if (e === 204 || e === 201 || e === 200) {
                             setCreated(v4());
                         }
                     }}

@@ -43,6 +43,7 @@ export const create = async (req) => {
         return res;
     } catch (error) {
         console.log(error);
+        return error.response;
     }
 };
 
@@ -52,5 +53,6 @@ export const update = async (req) => {
         return res;
     } catch (e) {
         console.log(e);
+        return e.response;
     }
 };

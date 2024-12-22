@@ -133,8 +133,10 @@ function Cart() {
             total = total - totalDiscount;
         }
 
-        if (shippingMethod === 'FAST') total += 15000;
-        else total += 50000;
+        if (checkedList.length > 0) {
+            if (shippingMethod === 'FAST') total += 15000;
+            else total += 50000;
+        }
 
         setTotal(total);
     }, [items, selectedVoucherObject, checkedList, reloadComponent, selectedValueVoucher, shippingMethod]);
@@ -372,7 +374,7 @@ function Cart() {
                                             />
                                         ) : null}
                                     </div>
-                                    <br></br>
+                                    <br />
                                     <div className={cx('ShippingMethod')}>
                                         <div>Phương thức vận chuyển</div>
                                         <div>
@@ -399,8 +401,8 @@ function Cart() {
                                             <label htmlFor="shippingmethod2">Hỏa tốc</label>
                                         </div>
                                     </div>
-                                    <br></br>
-                                    <div className={cx('PaymentMethod')}>
+
+                                    <div style={{ marginTop: '10px' }} className={cx('PaymentMethod')}>
                                         <div>Phương thức thanh toán</div>
                                         <div>
                                             <input
@@ -426,6 +428,24 @@ function Cart() {
                                             <label htmlFor="paymentmethod2">Thanh toán online</label>
                                         </div>
                                     </div>
+                                    <br />
+                                    {checkedList.length > 0 ? (
+                                        <div>
+                                            <i>
+                                                <div>
+                                                    Giá sản phẩm:{' '}
+                                                    {new Intl.NumberFormat('vi-VN').format(
+                                                        total - (shippingMethod === 'FAST' ? 15000 : 50000),
+                                                    )}
+                                                    đ
+                                                </div>
+                                                <div>
+                                                    Phí vận chuyển: {shippingMethod === 'FAST' ? '15.000đ' : '50.000đ'}
+                                                </div>
+                                            </i>
+                                        </div>
+                                    ) : null}
+
                                     <div className={cx('sum')}>
                                         <p>Tổng cộng: </p>
                                         <p>{new Intl.NumberFormat('vi-VN').format(total)}đ</p>

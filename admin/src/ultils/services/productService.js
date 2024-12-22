@@ -58,6 +58,7 @@ export const create = async (req) => {
         return res.data;
     } catch (error) {
         console.log(error);
+        return error.response;
     }
 };
 
@@ -120,6 +121,7 @@ export const update = async (req) => {
         return res.data;
     } catch (e) {
         console.log(e);
+        return e.response;
     }
 };
 
