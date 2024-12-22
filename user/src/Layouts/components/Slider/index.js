@@ -10,16 +10,16 @@ import 'swiper/css/autoplay'; // Import the autoplay CSS
 
 // Import required modules directly from 'swiper'
 import { Pagination, Navigation, Autoplay } from 'swiper';
-import { adidasBanner, nikeBanner } from '~/assets/images/index';
+import images from '~/assets/images/index';
 
 // Custom slider data with images and titles
 const sliders = [
     {
-        img: adidasBanner,
+        img: images.adidasBanner,
         title: 'Adidas',
     },
     {
-        img: nikeBanner,
+        img: images.nikeBanner,
         title: 'Nike',
     },
 ];
