@@ -10,15 +10,16 @@ import 'swiper/css/autoplay'; // Import the autoplay CSS
 
 // Import required modules directly from 'swiper'
 import { Pagination, Navigation, Autoplay } from 'swiper';
+import { adidasBanner, nikeBanner } from '~/assets/images/index';
 
 // Custom slider data with images and titles
 const sliders = [
     {
-        img: 'https://www.bloommaterials.com/wp-content/uploads/2020/03/BLOOM-BRAND-copy_Adidas.png',
+        img: adidasBanner,
         title: 'Adidas',
     },
     {
-        img: 'https://i.pinimg.com/564x/fa/45/96/fa4596ad9a9d39901eeb455ed4f74e44.jpg',
+        img: nikeBanner,
         title: 'Nike',
     },
 ];
