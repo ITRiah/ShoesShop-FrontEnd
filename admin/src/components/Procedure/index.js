@@ -28,11 +28,7 @@ function Procedure({ props, onEventDeleted, onUpdate }) {
     };
 
     const handleDeleteConfirmation = () => {
-        if (
-            window.confirm(
-                'Bạn có chắc chắn muốn xóa danh mục này không?\n Mọi sản phẩm hoặc bài viết trong danh mục sẽ bị xóa.',
-            )
-        ) {
+        if (window.confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này không?')) {
             handleDelete();
         }
     };

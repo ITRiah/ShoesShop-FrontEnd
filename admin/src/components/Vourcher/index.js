@@ -29,11 +29,7 @@ function Vourcher({ props, onEventDeleted, onUpdate }) {
     };
 
     const handleDeleteConfirmation = () => {
-        if (
-            window.confirm(
-                'Bạn có chắc chắn muốn xóa danh mục này không?\nMọi sản phẩm hoặc bài viết trong danh mục sẽ bị xóa.',
-            )
-        ) {
+        if (window.confirm('Bạn có chắc chắn muốn xóa voucher này không?')) {
             handleDelete();
         }
     };

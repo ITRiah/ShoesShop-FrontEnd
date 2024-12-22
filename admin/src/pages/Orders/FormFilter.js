@@ -99,8 +99,14 @@ function FormFilter({ search }) {
             <Row>
                 <Col>
                     <Form.Group controlId="fromDate">
-                        <Form.Label>Từ Ngày</Form.Label>
-                        <Form.Control type="date" value={fromDate} onChange={handleChangeFromDate} />
+                        <Form.Label>Từ Ngày</Form.Label>=
+                        <DatePicker
+                            selected={fromDate}
+                            onChange={handleChangeFromDate}
+                            dateFormat="dd/MM/yyyy" // Format the date to dd/mm/yyyy
+                            placeholderText="dd/mm/yyyy" // Show placeholder with date format
+                            className="form-control"
+                        />
                     </Form.Group>
                 </Col>
             </Row>
@@ -108,7 +114,13 @@ function FormFilter({ search }) {
                 <Col>
                     <Form.Group controlId="toDate">
                         <Form.Label>Đến Ngày</Form.Label>
-                        <Form.Control type="date" value={toDate} onChange={handleChangeToDate} />
+                        <DatePicker
+                            selected={toDate}
+                            onChange={handleChangeToDate}
+                            dateFormat="dd/MM/yyyy" // Format the date to dd/mm/yyyy
+                            placeholderText="dd/mm/yyyy" // Show placeholder with date format
+                            className="form-control"
+                        />
                     </Form.Group>
                 </Col>
             </Row>
