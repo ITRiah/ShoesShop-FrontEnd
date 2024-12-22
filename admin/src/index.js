@@ -5,8 +5,6 @@ import reportWebVitals from './reportWebVitals';
 import GlobalStyles from '~/components/GlobalStyles';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
-import 'react-datepicker/dist/react-datepicker.css';
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     // <React.StrictMode>
