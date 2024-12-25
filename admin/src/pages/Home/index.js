@@ -191,7 +191,6 @@ function Home() {
                         <Form.Group controlId="month">
                             <Form.Label>Tháng</Form.Label>
                             <Form.Control as="select" value={month} onChange={(e) => setMonth(e.target.value)}>
-                                <option value="">All</option>
                                 {months.map((m) => (
                                     <option key={v4()} value={m}>
                                         Tháng {m}

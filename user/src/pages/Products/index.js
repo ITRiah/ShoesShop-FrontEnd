@@ -1,13 +1,16 @@
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
+import ReactPaginate from 'react-paginate';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Products.module.scss';
 import ProductItem from '~/components/ProductItem';
 import Button from '~/components/Button';
 import { getbyid } from '~/ultils/services/categoriesService';
 import { getall } from '~/ultils/services/productService';
 import { v4 } from 'uuid';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
@@ -15,21 +18,38 @@ function Products() {
     const [showMore, setShowMore] = useState(false);
     const [products, setProducts] = useState([]);
     const [cate, setCate] = useState({});
+    const [limit, setLimit] = useState([0, 0]);
+    const [showAllCategories, setShowAllCategories] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+    const [pageValue, setPageValue] = useState(0);
+    const [perPageValue, setPerPageValue] = useState(9);
 
     const { id } = useParams();
 
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const queryParams = new URLSearchParams(location.search);
+    const s = queryParams.get('s');
+    const page = parseInt(queryParams.get('page'), 0) || 0;
+    const perPage = parseInt(queryParams.get('perPage'), 9) || 9;
+
     useEffect(() => {
+        setPageValue(page);
+        setPerPageValue(perPage);
+
         const fetchData = async () => {
-            const response = await getall('', '', '', [id], []);
+            const response = await getall('', limit[1] > 0 ? limit[1] : '', limit[0], [], [], page, perPage);
             if (response.statusCode === 200) {
                 setProducts(response.result);
+                setTotalPages(response.totalPage);
             } else {
                 setProducts([]);
             }
         };
 
         fetchData();
-    }, [id]);
+    }, [id, page, perPage, limit]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -43,6 +63,11 @@ function Products() {
         setShowMore(!showMore);
     }
 
+    const handlePageChange = ({ selected }) => {
+        setPageValue(selected);
+        navigate(`?page=${selected}&perPage=${perPageValue}`);
+    };
+
     const contentClasses = cx('content');
 
     const contentStyles = !showMore ? { maxHeight: '500px' } : {};
@@ -54,7 +79,24 @@ function Products() {
                     return <ProductItem key={v4()} props={item} />;
                 })}
             </div>
-
+            <div className={cx('pagination')}>
+                <ReactPaginate
+                    previousLabel={<FontAwesomeIcon icon={faArrowLeft} />}
+                    nextLabel={<FontAwesomeIcon icon={faArrowRight} />}
+                    breakLabel={'...'}
+                    forcePage={pageValue} // Synchronize current page
+                    pageCount={totalPages}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={handlePageChange}
+                    containerClassName="pagination-container"
+                    pageClassName="pagination-page"
+                    activeClassName="active"
+                    disabledClassName="pagination-disabled"
+                    previousClassName="pagination-previous"
+                    nextClassName="pagination-next"
+                />
+            </div>
             {cate.description && (
                 <div className={cx('description')}>
                     <div className={contentClasses} style={contentStyles}>

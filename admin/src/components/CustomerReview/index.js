@@ -14,6 +14,13 @@ const CustomerReview = ({ year }) => {
             text: 'Doanh thu theo tháng',
             align: 'left',
         },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val.toLocaleString('vi-VN') + 'đ';
+                },
+            },
+        },
     });
 
     const [series, setSeries] = useState([
@@ -65,7 +72,7 @@ const CustomerReview = ({ year }) => {
             }
         };
 
-        fetchData();
+        // fetchData();
     }, [year]); // Effect triggers when 'year' changes
 
     return (

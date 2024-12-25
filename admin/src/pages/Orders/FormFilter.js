@@ -40,27 +40,27 @@ function FormFilter({ search }) {
     const statusList = [
         {
             code: 'PENDING',
-            title: 'Chờ',
+            title: 'Chờ xử lý',
         },
         {
             code: 'CONFIRMED',
-            title: 'Đã xác nhận',
+            title: 'Xác nhận',
         },
         {
             code: 'PROCESSING',
-            title: 'Chuẩn bị',
+            title: 'Đang xử lý',
         },
         {
             code: 'SHIPPED',
-            title: 'Đã giao hàng',
+            title: 'Đang vận chuyển',
         },
         {
             code: 'DELIVERED',
-            title: 'Đã nhận hàng',
+            title: 'Đã giao',
         },
         {
             code: 'CANCELED',
-            title: 'Đã hủy',
+            title: 'Hủy',
         },
     ];
 
