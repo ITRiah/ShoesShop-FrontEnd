@@ -34,8 +34,9 @@ function Orders() {
         { field: 'ID', width: 50 },
         { field: 'Người Nhận', width: 180 },
         { field: 'Điện Thoại', width: 120 },
+        { field: 'Ngày đặt', width: 120 },
         { field: 'Tổng Tiền', width: 180 },
-        { field: 'Status', width: 137 },
+        { field: 'Trạng thái', width: 137 },
         { field: 'Action', width: 70 },
     ];
 
@@ -54,7 +55,7 @@ function Orders() {
         const fetchData = async () => {
             const response = await getall(fullName, fromDate, toDate, status, pageValue, perPageValue); // Add pagination params
             if (response.statusCode === 200) {
-                const newData = response.result.map(({ id, fullName, phone, totalAmount, status }) => {
+                const newData = response.result.map(({ id, fullName, phone, createdAt, totalAmount, status }) => {
                     const menu = [
                         {
                             title: 'Chi tiết',
@@ -101,6 +102,7 @@ function Orders() {
                         id,
                         fullName,
                         phone,
+                        createdAt: new Intl.DateTimeFormat('vi-VN').format(new Date(createdAt)),
                         totalAmount: formatPrice + 'đ',
                         status: getDes(status, orderStatusOptions),
                         action: <Ellipsis type2 menu={menu} />,
