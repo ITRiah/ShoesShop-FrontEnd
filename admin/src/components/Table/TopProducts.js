@@ -20,7 +20,7 @@ function TopProducts({ ...props }) {
                     width: '100px',
                 }}
             >
-                #{props.productId}
+                #{props.keys}
             </p>
             <p
                 style={{

@@ -37,7 +37,7 @@ const tableTitle = (
                 width: '100px',
             }}
         >
-            Mã
+            STT
         </p>
         <p
             style={{
