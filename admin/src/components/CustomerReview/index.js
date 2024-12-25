@@ -72,7 +72,7 @@ const CustomerReview = ({ year }) => {
             }
         };
 
-        // fetchData();
+        fetchData();
     }, [year]); // Effect triggers when 'year' changes
 
     return (

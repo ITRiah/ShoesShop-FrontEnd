@@ -72,7 +72,7 @@ function FormFilter({ Add, search }) {
             <Row>
                 <Col>
                     <Button variant="primary" onClick={handleSubmit}>
-                        Search
+                        Tìm kiếm
                     </Button>
                 </Col>
                 <Col>

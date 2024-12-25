@@ -26,20 +26,30 @@ function FormFilter({ Add, search }) {
                 <Col>
                     <Form.Group controlId="name">
                         <Form.Label>Từ ngày</Form.Label>
-                        <Form.Control type="date" placeholder="Enter name" value={fromDate} onChange={handleFromDateChange} />
+                        <Form.Control
+                            type="date"
+                            placeholder="Enter name"
+                            value={fromDate}
+                            onChange={handleFromDateChange}
+                        />
                     </Form.Group>
                 </Col>
                 <Col>
-                <Form.Group controlId="name">
+                    <Form.Group controlId="name">
                         <Form.Label>Đến ngày</Form.Label>
-                        <Form.Control type="date" placeholder="Enter name" value={toDate} onChange={handleToDateChange} />
+                        <Form.Control
+                            type="date"
+                            placeholder="Enter name"
+                            value={toDate}
+                            onChange={handleToDateChange}
+                        />
                     </Form.Group>
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <Button variant="primary" onClick={handleSubmit}>
-                        Search
+                        Tìm kiếm
                     </Button>
                 </Col>
                 <Col>
