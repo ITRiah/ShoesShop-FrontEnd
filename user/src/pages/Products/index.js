@@ -22,7 +22,7 @@ function Products() {
     const [showAllCategories, setShowAllCategories] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
     const [pageValue, setPageValue] = useState(0);
-    const [perPageValue, setPerPageValue] = useState(9);
+    const [perPageValue, setPerPageValue] = useState(12);
 
     const { id } = useParams();
 
@@ -32,14 +32,14 @@ function Products() {
     const queryParams = new URLSearchParams(location.search);
     const s = queryParams.get('s');
     const page = parseInt(queryParams.get('page'), 0) || 0;
-    const perPage = parseInt(queryParams.get('perPage'), 9) || 9;
+    const perPage = parseInt(queryParams.get('perPage'), 12) || 12;
 
     useEffect(() => {
         setPageValue(page);
         setPerPageValue(perPage);
 
         const fetchData = async () => {
-            const response = await getall('', limit[1] > 0 ? limit[1] : '', limit[0], [], [], page, perPage);
+            const response = await getall('', limit[1] > 0 ? limit[1] : '', limit[0], [cate], [], page, perPage);
             if (response.statusCode === 200) {
                 setProducts(response.result);
                 setTotalPages(response.totalPage);
@@ -49,7 +49,7 @@ function Products() {
         };
 
         fetchData();
-    }, [id, page, perPage, limit]);
+    }, [id, page, perPage, limit, cate]);
 
     useEffect(() => {
         const fetchData = async () => {
