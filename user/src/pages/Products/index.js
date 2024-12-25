@@ -39,7 +39,7 @@ function Products() {
         setPerPageValue(perPage);
 
         const fetchData = async () => {
-            const response = await getall('', limit[1] > 0 ? limit[1] : '', limit[0], [cate], [], page, perPage);
+            const response = await getall('', limit[1] > 0 ? limit[1] : '', limit[0], [id], [], page, perPage);
             if (response.statusCode === 200) {
                 setProducts(response.result);
                 setTotalPages(response.totalPage);
@@ -54,6 +54,7 @@ function Products() {
     useEffect(() => {
         const fetchData = async () => {
             const response = await getbyid(id);
+            console.log(response);
             setCate(response.data);
         };
         fetchData();
