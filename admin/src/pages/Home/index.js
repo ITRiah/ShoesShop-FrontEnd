@@ -164,10 +164,11 @@ function Home() {
                 >
                     <div>
                         <Table title="Top sản phẩm bán chạy" tableTitle={tableTitle}>
-                            {productSt.map((st) => {
+                            {productSt.map((st, index) => {
                                 return (
                                     <TopProducts
                                         key={v4()}
+                                        index={index + 1}
                                         productId={st.productId}
                                         productName={st.productName}
                                         totalQuantitySold={st.totalQuantitySold}

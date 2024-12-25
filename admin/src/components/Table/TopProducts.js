@@ -20,7 +20,7 @@ function TopProducts({ ...props }) {
                     width: '100px',
                 }}
             >
-                #{props.keys}
+                {props.index}
             </p>
             <p
                 style={{
